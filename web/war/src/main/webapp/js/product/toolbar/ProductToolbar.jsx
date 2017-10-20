@@ -20,6 +20,8 @@ define([
      * @param {string} identifier Unique id for this item
      * @param {string} itemComponentPath Path to {@link org.visallo.product.toolbar.item~Component} to render
      * @param {func} canHandle Given `product` should this item be placed
+     * @param {func} [initialize] Allows configuration of the product environment with same parameters passed to
+     *   {@link org.visallo.product.toolbar.item~Component}.
      * @param {string} [placementHint=menu] How this item should be displayed in the toolbar
      * * `menu` inside the hamburger menu list
      * * `popover` as a button that will expand a popover where the component is rendered.
@@ -119,10 +121,15 @@ define([
                 ...this.mapDeprecatedItems()
             ];
 
-            items
-                .map(item => ({ ...item, props: { ...item.props, ...injectedProductProps}}))
-                .filter(item => item.canHandle(product))
-                .forEach(groupByPlacement);
+            items.forEach(_item => {
+                const item = { ..._item, props: { ..._item.props, ...injectedProductProps}}
+                if (item.canHandle(product)) {
+                    if (_.isFunction(item.initialize)) {
+                        item.initialize(item.props);
+                    }
+                    groupByPlacement(item);
+                }
+            });
 
             return (
                 <div className="product-toolbar" style={{transform: `translate(-${rightOffset}px, 0)`}}>
