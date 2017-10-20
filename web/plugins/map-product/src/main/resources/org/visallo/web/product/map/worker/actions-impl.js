@@ -81,6 +81,7 @@ define([
             const workspaceId = state.workspace.currentId;
             let undoPayload = {};
             if (undoable) {
+                // TODO: reenable
                 //undoPayload = {
                     //undoScope: productId,
                     //undo: {
