@@ -3,6 +3,7 @@ define([
     'prop-types',
     'configuration/plugins/registry',
     'components/RegistryInjectorHOC',
+    'util/deepObjectCache',
     './ProductToolbarItem',
     './ProductToolbarMenu'
 ], function(
@@ -10,6 +11,7 @@ define([
     PropTypes,
     registry,
     RegistryInjectorHOC,
+    DeepObjectCache,
     ProductToolbarItem,
     ProductToolbarMenu) {
     'use strict';

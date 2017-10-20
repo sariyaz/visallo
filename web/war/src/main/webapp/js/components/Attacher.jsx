@@ -38,6 +38,7 @@ define([
         componentWillUnmount() {
             if (this.attacher) {
                 this.attacher.teardown();
+                this.attacher = null;
             }
         },
 
@@ -76,10 +77,12 @@ define([
                 teardownOptions: { react: false },
                 emptyFlight: true
             }).then(attach => {
-                if (attach._reactElement) {
-                    this.setState({ element: attach._reactElement })
+                if (this.attacher) {
+                    if (attach._reactElement) {
+                        this.setState({ element: attach._reactElement })
+                    }
+                    this.afterAttach();
                 }
-                this.afterAttach();
             })
         },
 

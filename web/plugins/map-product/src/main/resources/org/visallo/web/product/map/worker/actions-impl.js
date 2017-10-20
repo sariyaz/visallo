@@ -76,6 +76,35 @@ define([
             })
         },
 
+        setElementData: ({ productId, elements, undoable }) => (dispatch, getState) => {
+            const state = getState();
+            const workspaceId = state.workspace.currentId;
+            let undoPayload = {};
+            if (undoable) {
+                //undoPayload = {
+                    //undoScope: productId,
+                    //undo: {
+                        //productId,
+                        //elements: { vertexIds: combined }
+                    //},
+                    //redo: {
+                        //productId,
+                        //elements
+                    //}
+                //};
+            }
+
+            dispatch({
+                type: 'PRODUCT_MAP_ADD_ELEMENTS',
+                payload: {
+                    workspaceId,
+                    productId,
+                    elements
+                    //...undoPayload
+                }
+            });
+        },
+
         removeElements: ({ productId, elements, undoable }) => (dispatch, getState) => {
             const state = getState();
             const workspaceId = state.workspace.currentId;

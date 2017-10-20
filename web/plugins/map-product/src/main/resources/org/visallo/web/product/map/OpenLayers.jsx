@@ -99,11 +99,11 @@ define([
             if (features) {
                 for (let featureIndex = 0; featureIndex < features.length; featureIndex++) {
                     const data = features[featureIndex];
-                    const { id, styles, geometry: geometryFn, geoLocations, element, ...rest } = data;
+                    const { id, styles, geometry: geometryOverride, geoLocations, element, ...rest } = data;
                     let geometry = null;
 
-                    if (geometryFn) {
-                        geometry = geometryFn(ol);
+                    if (geometryOverride) {
+                        geometry = geometryOverride;
                     } else if (geoLocations) {
                         geometry = new ol.geom.MultiPoint(geoLocations.map(geo => ol.proj.fromLonLat(geo)))
                     }

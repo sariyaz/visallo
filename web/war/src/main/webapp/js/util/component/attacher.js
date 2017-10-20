@@ -68,6 +68,8 @@ define([
                 $(this._node).teardownAllComponents();
             }
         }
+        this._reactElement = null;
+        this._flightComponent = null;
         return this;
     };
 

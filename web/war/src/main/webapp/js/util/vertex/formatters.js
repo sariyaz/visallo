@@ -461,18 +461,56 @@ define([
              * @returns {object} concept
              */
             concept: function(vertex) {
-                var conceptType = vertex && V.prop(vertex, 'conceptType'), concept;
+                if (!vertex || vertex.type !== 'vertex') {
+                    throw new Error('Not a vertex, unable to get concept', vertex);
+                }
+                return V.ontology(vertex)
+            },
 
-                if (!conceptType || conceptType === 'Unknown') {
-                    conceptType = 'http://www.w3.org/2002/07/owl#Thing';
+            /**
+             * Given an edge, get the ontology relationship object.
+             *
+             * If not found in ontology returns undefined
+             *
+             * @param {object} edge
+             * @returns {object} relationship
+             */
+            relationship: function(edge) {
+                if (!edge || edge.type !== 'edge') {
+                    throw new Error('Not an edge, unable to get relationship', edge);
+                }
+                return V.ontology(edge)
+            },
+
+            /**
+             * Given a vertex or edge, get the ontology concept/relationship object.
+             *
+             * If not found in ontology returns root concept (if vertex) or null (if relationship).
+             *
+             * @param {object} element
+             * @returns {object} ontology
+             */
+            ontology: function(element) {
+                var ontology;
+                if (element.type === 'vertex') {
+                    var conceptType = element && element.conceptType;
+
+                    if (!conceptType || conceptType === 'Unknown') {
+                        conceptType = 'http://www.w3.org/2002/07/owl#Thing';
+                    }
+
+                    ontology = getConcept(conceptType);
+                    if (!ontology) {
+                        console.warn('Concept: ' + conceptType + ' is not in ontology');
+                        ontology = getConcept('http://www.w3.org/2002/07/owl#Thing');
+                    }
+                } else if (element.type === 'edge') {
+                    ontology = element && element.label && getRelationship(element.label)
+                } else {
+                    console.warn('Unknown element type', element.type, element)
                 }
 
-                concept = getConcept(conceptType);
-                if (!concept && conceptType !== 'relationship') {
-                    console.warn('Concept: ' + conceptType + ' is not in ontology');
-                    concept = getConcept('http://www.w3.org/2002/07/owl#Thing');
-                }
-                return concept;
+                return ontology
             },
 
             /**

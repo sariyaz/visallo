@@ -891,14 +891,11 @@ define([
                     selected = false;
                     selectable = true;
                     classes = 'ancillary';
-                    data = { id };
-                    let extensionHandled = false;
                     registry['org.visallo.graph.ancillary'].forEach(({
-                        canHandle, canDisplayBeforeVertex, data: dataFn, classes: classFn
+                        canHandle, data: dataFn, classes: classFn
                     }) => {
                         const vertexReady = id in vertices;
-                        if (canHandle(node) && (vertexReady || canDisplayBeforeVertex(node))) {
-                            extensionHandled = true;
+                        if (canHandle(node) && vertexReady) {
                             if (dataFn) {
                                 data = { ...dataFn(node, vertices[id]), id };
                             }
@@ -911,12 +908,11 @@ define([
                         }
                     })
 
-                    if (!extensionHandled) {
-                        classes += ' unhandled';
-                    }
-
                     if (data) {
                         renderedNodeIds[id] = true;
+                    } else {
+                        data = { id }
+                        classes = 'unhandled';
                     }
                 } else if (type === 'vertex') {
                     selected = id in verticesSelectedById;
