@@ -78,11 +78,12 @@ define([
         },
 
         componentDidMount() {
-            $(document).on('keydown.org-visallo-graph-product-toolbar', (event) => {
+            $(document).on('keydown.org-visallo-product-toolbar', (event) => {
                 if (event.which === 27) { //esc
                     this.setState({ activeItem: null, stayOpen: false });
                 }
             });
+            this.triggerInitialize()
         },
 
         componentDidUpdate(prevState, prevProps) {
@@ -90,10 +91,12 @@ define([
                 clearTimeout(this.openItemTimeout);
                 this.openItemTimeout = null;
             }
+            this.triggerInitialize()
         },
 
         componentWillUnmount() {
-            $(document).off('keydown.org-visallo-graph-product-toolbar');
+            this.triggerTeardown()
+            $(document).off('keydown.org-visallo-product-toolbar');
         },
 
         render() {
@@ -121,11 +124,12 @@ define([
                 ...this.mapDeprecatedItems()
             ];
 
+            this.eligibleForInitialize = [];
             items.forEach(_item => {
                 const item = { ..._item, props: { ..._item.props, ...injectedProductProps}}
                 if (item.canHandle(product)) {
                     if (_.isFunction(item.initialize)) {
-                        item.initialize(item.props);
+                        this.eligibleForInitialize.push(item)
                     }
                     groupByPlacement(item);
                 }
@@ -261,6 +265,40 @@ define([
             });
 
             return items;
+        },
+
+        // Trigger initialize/teardown on extensions only once per product change
+        triggerInitialize() {
+            if (this.eligibleForInitialize) {
+                if (!this.initializedById) {
+                    this.initializedById = {};
+                }
+                this.eligibleForInitialize.forEach(item => {
+                    const { identifier, initialize, props } = item;
+                    const { product } = props;
+
+                    if (!_.isEmpty(props)) {
+                        const previous = this.initializedById[identifier];
+                        if (!previous || previous.props.product.id !== product.id) {
+                            if (previous && _.isFunction(previous.teardown)) {
+                                previous.teardown(previous.props)
+                            }
+                            this.initializedById[identifier] = item;
+                            initialize(props);
+                        }
+                    }
+                })
+            }
+        },
+
+        triggerTeardown() {
+            if (this.eligibleForInitialize) {
+                this.eligibleForInitialize.forEach(({ teardown, props }) => {
+                    if (_.isFunction(teardown)) {
+                        teardown(props)
+                    }
+                })
+            }
         }
     });
 
