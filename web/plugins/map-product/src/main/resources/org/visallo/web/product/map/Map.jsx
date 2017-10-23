@@ -196,7 +196,8 @@ define([
 
         onMouseOver(ol, map, features) {
             const cluster = features && features[0];
-            if (cluster.get('coordinates').length > 1) {
+            const coordinates = cluster && cluster.get('coordinates');
+            if (coordinates && coordinates.length > 1) {
                 clusterHover.show(ol, map, cluster, this._openlayers._featureStyle)
             }
         },
@@ -430,7 +431,9 @@ define([
         },
 
         clearCaches() {
-            Object.keys(this.caches).forEach(key => this.caches[key].clear())
+            Object.keys(this.caches).forEach(k => {
+                Object.keys(this.caches[k]).forEach(key => this.caches[k][key].clear())
+            })
             this.forceUpdate();
         }
     });
