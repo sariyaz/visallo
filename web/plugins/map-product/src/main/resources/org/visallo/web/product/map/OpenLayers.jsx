@@ -708,15 +708,21 @@ define([
          * @property {object} cluster
          * @property {object} cluster.clusterSource [multiPointCluster](https://github.com/visallo/visallo/blob/master/web/plugins/map-product/src/main/resources/org/visallo/web/product/map/multiPointCluster.js) that implements the [`ol.source.Cluster`](http://openlayers.org/en/latest/apidoc/ol.source.Cluster.html) interface to cluster the `source` features.
          * @property {object} cluster.source The [`ol.source.Vector`](http://openlayers.org/en/latest/apidoc/ol.source.Vector.html) source of all map pins before clustering.
+         * @property {object} above The layer/source above the cluster
+         * @property {object} above.layer The layer above the cluster
+         * @property {object} above.source The source above the cluster
+         * @property {object} below The layer/source below the cluster
+         * @property {object} below.layer The layer below the cluster
+         * @property {object} below.source The source below the cluster
          * @property {object} cluster.layer The [`ol.layer.Vector`](http://openlayers.org/en/latest/apidoc/ol.layer.Vector.html) pin layer
          */
         getInjectedToolProps() {
             const { clearCaches: requestUpdate, product } = this.props;
-            const { map, cluster } = this.state;
+            const { map, cluster, above, below } = this.state;
             let props = {};
 
             if (map && cluster) {
-                props = { product, ol, map, cluster, requestUpdate }
+                props = { product, ol, map, cluster, above, below, requestUpdate }
             }
 
             return props;

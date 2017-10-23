@@ -71,6 +71,8 @@ define([
      * @param {org.visallo.map.geometry~canHandle} canHandle Function that
      * determines if geometry function applies for elements.
      * @param {org.visallo.map.geometry~geometry} geometry Geometry to use for feature
+     * @param {string} [position=below] Whether this feature gets placed in
+     * layer `above` or `below` the clustered layer.
      * @example
      * require(['openlayers'], function(ol) {
      *     registry.registerExtension('org.visallo.map.geometry', {
@@ -87,7 +89,8 @@ define([
     registry.documentExtensionPoint('org.visallo.map.geometry',
         'Change map geometries using OpenLayers',
         function(e) {
-            return _.isFunction(e.canHandle) && _.isFunction(e.geometry)
+            return _.isFunction(e.canHandle) && _.isFunction(e.geometry) &&
+                (!e.position || (e.position === 'above' || e.position === 'below'))
         },
         'http://docs.visallo.org/extension-points/front-end/mapGeometry'
     );
@@ -117,7 +120,8 @@ define([
                     ref={c => {this._openlayers = c}}
                     product={product}
                     features={clusterFeatures}
-                    below={ancillaryFeatures}
+                    below={ancillaryFeatures.below}
+                    above={ancillaryFeatures.above}
                     viewport={viewport}
                     generatePreview={generatePreview}
                     panelPadding={this.props.panelPadding}
@@ -243,7 +247,7 @@ define([
         getGeometry(edgeInfo, element, ontology) {
             const { registry } = this.props;
             const calculatedGeometry = registry['org.visallo.map.geometry']
-                .reduce((geometries, { canHandle, geometry }) => {
+                .reduce((geometries, { canHandle, geometry, position }) => {
                     /**
                      * Decide which elements to apply geometry
                      *
@@ -269,7 +273,10 @@ define([
                          */
                         const geo = this.caches.geometries.geometry.getOrUpdate(geometry, edgeInfo, element, ontology)
                         if (geo) {
-                            geometries.push(geo);
+                            geometries.push({
+                                geometry: geo,
+                                position
+                            });
                         }
                     }
                     return geometries
@@ -348,7 +355,7 @@ define([
             const elements = Object.values(vertices).concat(Object.values(edges));
             const geoLocationProperties = _.groupBy(this.props.ontologyProperties, 'dataType').geoLocation;
 
-            const ancillaryFeatures = [];
+            const ancillaryFeatures = { above: [], below: [] }
             const clusterFeatures = [];
 
             elements.forEach(el => {
@@ -356,15 +363,17 @@ define([
                 const edgeInfo = extendedDataType[el.id];
                 const ontology = F.vertex.ontology(el);
                 const styles = this.getStyles(edgeInfo, el, ontology);
-                const geometry = this.getGeometry(edgeInfo, el, ontology)
+                const geometryOverride = this.getGeometry(edgeInfo, el, ontology)
+                const geometry = geometryOverride && geometryOverride.geometry;
 
                 if (extendedData.vertices[el.id] && extendedData.vertices[el.id].ancillary) {
-                    ancillaryFeatures.push({
+                    const position = geometryOverride && geometryOverride.position;
+                    ancillaryFeatures[position || 'below'].push({
                         id: el.id,
                         element: el,
                         selected,
-                        geometry,
-                        styles
+                        styles,
+                        geometry
                     })
                     return;
                 }
@@ -387,11 +396,9 @@ define([
                         })
                         return props;
                     }, []),
-                    // TODO: check with edges
-                    conceptType = F.vertex.prop(el, 'conceptType'),
                     selected = el.id in elementsSelectedById,
                     iconUrl = 'map/marker/image?' + $.param({
-                        type: conceptType,
+                        type: el.conceptType,
                         workspaceId: this.props.workspaceId,
                         scale: this.props.pixelRatio > 1 ? '2' : '1',
                     }),
