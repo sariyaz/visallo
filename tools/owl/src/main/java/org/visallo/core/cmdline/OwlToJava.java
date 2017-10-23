@@ -10,7 +10,10 @@ import org.visallo.core.exception.VisalloException;
 import org.visallo.core.model.properties.types.*;
 import org.visallo.core.util.OWLOntologyUtil;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import static org.vertexium.util.IterableUtils.toList;
 
@@ -185,6 +188,10 @@ public class OwlToJava extends CommandLineTool {
         }
     }
 
+    protected List<String> getExtendedDataTableNames(OWLOntology o, OWLDataProperty dataProperty) {
+        return OWLOntologyUtil.getExtendedDataTableNames(o, dataProperty);
+    }
+
     private String iriToJavaConstName(IRI documentIri, String iri) {
         String iriPartAfterHash = getIriPartAfterHash(iri);
         String javaConstName = toJavaConst(iriPartAfterHash);
@@ -201,15 +208,6 @@ public class OwlToJava extends CommandLineTool {
 
     protected String getDataPropertyDisplayType(OWLOntology o, OWLDataProperty dataProperty) {
         return OWLOntologyUtil.getDisplayType(o, dataProperty);
-    }
-
-    protected List<String> getExtendedDataTableNames(OWLOntology o, OWLDataProperty dataProperty) {
-        Iterable<OWLAnnotation> extendedDataTableDomains = OWLOntologyUtil.getExtendedDataTableDomains(o, dataProperty);
-        List<String> results = new ArrayList<>();
-        for (OWLAnnotation extendedDataTableDomain : extendedDataTableDomains) {
-            results.add(OWLOntologyUtil.getOWLAnnotationValueAsString(extendedDataTableDomain));
-        }
-        return results;
     }
 
     protected OWLDatatype getDataPropertyRange(OWLOntology o, OWLDataProperty dataProperty) {

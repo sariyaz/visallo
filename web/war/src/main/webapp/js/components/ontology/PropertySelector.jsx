@@ -124,7 +124,7 @@ define([
             if (otherFilters) {
                 const { userVisible, ...rest } = otherFilters;
                 otherFilters = rest;
-                const showAdmin = userVisible === undefined;
+                const showAdmin = userVisible === null;
                 if (showAdmin) {
                     properties = ontologySelectors.getPropertiesWithHeaders(state);
                 }

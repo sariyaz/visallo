@@ -15,10 +15,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import static org.visallo.core.util.StreamUtil.stream;
 
 public class OWLOntologyUtil {
-    private static final String OBJECT_PROPERTY_DOMAIN_IRI = "http://visallo.org#objectPropertyDomain";
-    private static final String EXTENDED_DATA_TABLE_DOMAIN_IRI = "http://visallo.org#extendedDataTableDomain";
+    public static final String OBJECT_PROPERTY_DOMAIN_IRI = "http://visallo.org#objectPropertyDomain";
+    public static final String EXTENDED_DATA_TABLE_DOMAIN_IRI = "http://visallo.org#extendedDataTableDomain";
+    public static final String EXTENDED_DATA_TABLE_IRI = "http://visallo.org#extendedDataTable";
 
     public static String getLabel(OWLOntology o, OWLEntity owlEntity) {
         String bestLabel = owlEntity.getIRI().toString();
@@ -145,6 +149,12 @@ public class OWLOntologyUtil {
             }
         }
         return results;
+    }
+
+    public static List<String> getExtendedDataTableNames(OWLOntology o, OWLDataProperty owlDataTypeProperty) {
+        return stream(getExtendedDataTableDomains(o, owlDataTypeProperty))
+                .map(OWLOntologyUtil::getOWLAnnotationValueAsString)
+                .collect(Collectors.toList());
     }
 
     public static String getDisplayType(OWLOntology o, OWLEntity owlEntity) {

@@ -104,7 +104,7 @@ define([
                 filter.searchable = true;
             }
             if (showAdminProperties === true) {
-                filter.userVisible = undefined;
+                filter.userVisible = null;
             }
             if (onlySortable === true) {
                 filter.sortable = true

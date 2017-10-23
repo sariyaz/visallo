@@ -285,6 +285,7 @@ public class InMemoryOntologyRepository extends OntologyRepositoryBase {
     protected OntologyProperty addPropertyTo(
             List<Concept> concepts,
             List<Relationship> relationships,
+            List<String> extendedDataTableNames,
             String propertyIri,
             String displayName,
             PropertyType dataType,
@@ -367,6 +368,13 @@ public class InMemoryOntologyRepository extends OntologyRepositoryBase {
             property.getRelationshipIris().add(relationship.getIRI());
             if (isPublic(workspaceId) || relationship.getSandboxStatus() == SandboxStatus.PRIVATE) {
                 relationship.getProperties().add(property);
+            }
+        }
+
+        if (extendedDataTableNames != null) {
+            for (String extendedDataTableName : extendedDataTableNames) {
+                InMemoryExtendedDataTableOntologyProperty edtp = (InMemoryExtendedDataTableOntologyProperty) getPropertyByIRI(extendedDataTableName, workspaceId);
+                edtp.addTableProperty(property.getIri());
             }
         }
 
@@ -726,15 +734,6 @@ public class InMemoryOntologyRepository extends OntologyRepositoryBase {
         workspaceCache.put(relationshipIRI, inMemRelationship);
 
         return inMemRelationship;
-    }
-
-    @Override
-    protected void addExtendedDataTableProperty(OntologyProperty tableProperty, OntologyProperty property, User user, String workspaceId) {
-        if (!(tableProperty instanceof InMemoryExtendedDataTableOntologyProperty)) {
-            throw new VisalloException("Invalid property type to add extended data table property to: " + tableProperty.getDataType());
-        }
-        InMemoryExtendedDataTableOntologyProperty edtp = (InMemoryExtendedDataTableOntologyProperty) tableProperty;
-        edtp.addTableProperty(property.getIri());
     }
 
     private static class OwlData {

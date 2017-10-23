@@ -5,11 +5,10 @@ import org.vertexium.Vertex;
 import org.visallo.core.model.ontology.ExtendedDataTableProperty;
 import org.visallo.core.model.ontology.OntologyProperties;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
 
 public class VertexiumExtendedDataTableOntologyProperty extends VertexiumOntologyProperty implements ExtendedDataTableProperty {
-    private List<String> tablePropertyIris = new ArrayList<>();
+    private LinkedHashSet<String> tablePropertyIris = new LinkedHashSet<>();
 
     public VertexiumExtendedDataTableOntologyProperty(Vertex vertex, ImmutableList<String> dependentPropertyIris, String workspaceId) {
         super(vertex, dependentPropertyIris, workspaceId);

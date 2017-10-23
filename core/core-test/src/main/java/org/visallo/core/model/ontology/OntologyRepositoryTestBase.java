@@ -78,7 +78,7 @@ public abstract class OntologyRepositoryTestBase extends VisalloInMemoryTestBase
         }
 
         adminUser = getUserRepository().findOrAddUser("junit-admin", "Junit Admin", "junit-admin@visallo.com", "password");
-        Set<String> privileges = Privilege.ALL_BUILT_IN.stream().map(privilege -> privilege.getName()).collect(Collectors.toSet());
+        Set<String> privileges = Privilege.ALL_BUILT_IN.stream().map(Privilege::getName).collect(Collectors.toSet());
         setPrivileges(adminUser, privileges);
 
         getWorkspaceRepository().updateUserOnWorkspace(workspace, adminUser.getUserId(), WorkspaceAccess.WRITE, systemUser);
@@ -228,7 +228,7 @@ public abstract class OntologyRepositoryTestBase extends VisalloInMemoryTestBase
 
     @Test
     public void testExceptionDeletingSandboxedConceptsWithDescendants() throws Exception {
-        SampleOntologyDetails ontology = createSampleOntology();
+        createSampleOntology();
         Concept concept = getOntologyRepository().getConceptByIRI(SANDBOX_CONCEPT_IRI, workspaceId);
 
         // Add a descendant
@@ -377,8 +377,7 @@ public abstract class OntologyRepositoryTestBase extends VisalloInMemoryTestBase
 
         Relationship relationship = getOntologyRepository().getRelationshipByIRI(SANDBOX_RELATIONSHIP_IRI, workspaceId);
 
-        VisibilityJson json = VisibilityJson.updateVisibilitySourceAndAddWorkspaceId(new VisibilityJson(), "", workspaceId);
-        Visibility visibility = getVisibilityTranslator().toVisibility(json).getVisibility();
+        VisibilityJson.updateVisibilitySourceAndAddWorkspaceId(new VisibilityJson(), "", workspaceId);
 
         List<Concept> things = Collections.singletonList(getOntologyRepository().getEntityConcept(workspaceId));
         getOntologyRepository().getOrCreateRelationshipType(relationship, things, things, SANDBOX_RELATIONSHIP_IRI + "child", true, adminUser, workspaceId);
@@ -1155,7 +1154,6 @@ public abstract class OntologyRepositoryTestBase extends VisalloInMemoryTestBase
         String publicPropertyId;
 
         String sandboxConceptId;
-        String sandboxChildConceptId;
         String sandboxRelationshipId;
         String sandboxPropertyId;
         String sandboxPropertyIdSandboxedConcept;
@@ -1240,6 +1238,16 @@ public abstract class OntologyRepositoryTestBase extends VisalloInMemoryTestBase
                 .stream()
                 .anyMatch(p -> p.getIri().equals(firstMetProperty.getIri()))
         );
+    }
+
+    private void validateTestOwlExtendedDataTables() {
+        OntologyProperty personTable = getOntologyRepository().getPropertyByIRI(TEST_IRI + "#personExtendedDataTable", PUBLIC);
+        assertTrue("personTable should be an instance of " + ExtendedDataTableProperty.class.getName(), personTable instanceof ExtendedDataTableProperty);
+        ExtendedDataTableProperty edtp = (ExtendedDataTableProperty) personTable;
+        ImmutableList<String> columns = edtp.getTablePropertyIris();
+        assertEquals(2, columns.size());
+        assertTrue("", columns.contains(TEST_IRI + "#personExtendedDataTableColumn1"));
+        assertTrue("", columns.contains(TEST_IRI + "#personExtendedDataTableColumn2"));
     }
 
     private void validateTestOwlConcepts(int expectedIriSize) throws IOException {
@@ -1359,8 +1367,8 @@ public abstract class OntologyRepositoryTestBase extends VisalloInMemoryTestBase
         validateTestOwlRelationship();
         validateTestOwlConcepts(2);
         validateTestOwlProperties();
+        validateTestOwlExtendedDataTables();
     }
-
 
     private void loadHierarchyOwlFile() throws Exception {
         importTestOntologyFile(TEST_HIERARCHY_OWL, TEST_HIERARCHY_IRI);

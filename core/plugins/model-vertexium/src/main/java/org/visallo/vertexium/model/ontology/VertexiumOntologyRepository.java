@@ -39,6 +39,7 @@ import org.visallo.core.security.VisalloVisibility;
 import org.visallo.core.security.VisibilityTranslator;
 import org.visallo.core.user.User;
 import org.visallo.core.util.JSONUtil;
+import org.visallo.core.util.OWLOntologyUtil;
 import org.visallo.core.util.VisalloLogger;
 import org.visallo.core.util.VisalloLoggerFactory;
 import org.visallo.web.clientapi.model.ClientApiOntology;
@@ -586,6 +587,7 @@ public class VertexiumOntologyRepository extends OntologyRepositoryBase {
     protected OntologyProperty addPropertyTo(
             List<Concept> concepts,
             List<Relationship> relationships,
+            List<String> extendedDataTableNames,
             String propertyIri,
             String displayName,
             PropertyType dataType,
@@ -607,7 +609,9 @@ public class VertexiumOntologyRepository extends OntologyRepositoryBase {
             User user,
             String workspaceId
     ) {
-        if (CollectionUtils.isEmpty(concepts) && CollectionUtils.isEmpty(relationships)) {
+        if (CollectionUtils.isEmpty(extendedDataTableNames)
+                && CollectionUtils.isEmpty(concepts)
+                && CollectionUtils.isEmpty(relationships)) {
             throw new VisalloException("Must specify concepts or relationships to add property");
         }
         Vertex vertex = getOrCreatePropertyVertex(
@@ -619,6 +623,7 @@ public class VertexiumOntologyRepository extends OntologyRepositoryBase {
                 possibleValues,
                 concepts,
                 relationships,
+                extendedDataTableNames,
                 user,
                 workspaceId
         );
@@ -676,19 +681,6 @@ public class VertexiumOntologyRepository extends OntologyRepositoryBase {
         } catch (Exception e) {
             throw new VisalloException("Could not create property: " + propertyIri, e);
         }
-    }
-
-    @Override
-    protected void addExtendedDataTableProperty(OntologyProperty tableProperty, OntologyProperty property, User user, String workspaceId) {
-        if (!(tableProperty instanceof VertexiumExtendedDataTableOntologyProperty)) {
-            throw new VisalloException("Invalid table property type: " + tableProperty.getDataType());
-        }
-
-        Vertex tablePropertyVertex = ((VertexiumExtendedDataTableOntologyProperty) tableProperty).getVertex();
-        Vertex propertyVertex = ((VertexiumOntologyProperty) property).getVertex();
-
-        findOrAddEdge(tablePropertyVertex, propertyVertex, LabelName.HAS_PROPERTY.toString(), user, workspaceId);
-        ((VertexiumExtendedDataTableOntologyProperty) tableProperty).addProperty(property.getIri());
     }
 
     @Override
@@ -811,6 +803,7 @@ public class VertexiumOntologyRepository extends OntologyRepositoryBase {
             Map<String, String> possibleValues,
             List<Concept> concepts,
             List<Relationship> relationships,
+            List<String> extendedDataTableNames,
             User user,
             String workspaceId
     ) {
@@ -851,6 +844,22 @@ public class VertexiumOntologyRepository extends OntologyRepositoryBase {
                 for (Relationship relationship : relationships) {
                     checkNotNull(relationship, "relationships cannot have null values");
                     findOrAddEdge(ctx, ((VertexiumRelationship) relationship).getVertex(), propertyVertex, LabelName.HAS_PROPERTY.toString());
+                }
+                if (extendedDataTableNames != null) {
+                    for (String extendedDataTableName : extendedDataTableNames) {
+                        checkNotNull(extendedDataTableName, "extendedDataTableNames cannot have null values");
+                        OntologyProperty tableProperty = getPropertyByIRI(extendedDataTableName, workspaceId);
+                        checkNotNull(tableProperty, "Could not find extended data property: " + extendedDataTableName);
+                        if (!(tableProperty instanceof VertexiumExtendedDataTableOntologyProperty)) {
+                            throw new VisalloException("Found property " + extendedDataTableName + " but was expecting "
+                                    + "an extended data table property, check that the range is set to "
+                                    + OWLOntologyUtil.EXTENDED_DATA_TABLE_IRI);
+                        }
+                        VertexiumExtendedDataTableOntologyProperty extendedDataTableProperty = (VertexiumExtendedDataTableOntologyProperty) tableProperty;
+                        Vertex extendedDataTableVertex = extendedDataTableProperty.getVertex();
+                        findOrAddEdge(ctx, extendedDataTableVertex, propertyVertex, LabelName.HAS_PROPERTY.toString());
+                        extendedDataTableProperty.addProperty(propertyIri);
+                    }
                 }
 
                 if (!isPublic(workspaceId)) {

@@ -65,6 +65,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static org.visallo.core.util.StreamUtil.stream;
 
 public abstract class OntologyRepositoryBase implements OntologyRepository {
     public static final String BASE_OWL_IRI = "http://visallo.org";
@@ -341,12 +342,23 @@ public abstract class OntologyRepositoryBase implements OntologyRepository {
     }
 
     private void importDataProperties(OWLOntology o, Authorizations authorizations) {
+        // find all extended data tables and pre-create them
+        boolean foundExtendedDataTable = false;
+        for (OWLDataProperty dataTypeProperty : o.getDataPropertiesInSignature()) {
+            for (OWLDataRange rangeClassExpr : EntitySearcher.getRanges(dataTypeProperty, o)) {
+                String rangeIri = ((HasIRI) rangeClassExpr).getIRI().toString();
+                if (OWLOntologyUtil.EXTENDED_DATA_TABLE_IRI.equals(rangeIri)) {
+                    importDataProperty(o, dataTypeProperty, authorizations);
+                    foundExtendedDataTable = true;
+                    break;
+                }
+            }
+        }
+        if (foundExtendedDataTable) {
+            clearCache();
+        }
         for (OWLDataProperty dataTypeProperty : o.getDataPropertiesInSignature()) {
             importDataProperty(o, dataTypeProperty, authorizations);
-        }
-        clearCache();
-        for (OWLDataProperty dataTypeProperty : o.getDataPropertiesInSignature()) {
-            importDataPropertyExtendedDataTableDomains(o, dataTypeProperty);
         }
     }
 
@@ -626,11 +638,13 @@ public abstract class OntologyRepositoryBase implements OntologyRepository {
                 }
             }
 
+            List<String> extendedDataTableNames = OWLOntologyUtil.getExtendedDataTableNames(o, dataTypeProperty);
             Map<String, String> possibleValues = OWLOntologyUtil.getPossibleValues(o, dataTypeProperty);
             Collection<TextIndexHint> textIndexHints = OWLOntologyUtil.getTextIndexHints(o, dataTypeProperty);
             OntologyProperty property = addPropertyTo(
                     domainConcepts,
                     domainRelationships,
+                    extendedDataTableNames,
                     propertyIRI,
                     propertyDisplayName,
                     propertyType,
@@ -695,31 +709,6 @@ public abstract class OntologyRepositoryBase implements OntologyRepository {
         }
     }
 
-    private void importDataPropertyExtendedDataTableDomains(OWLOntology o, OWLDataProperty dataTypeProperty) {
-        String propertyIri = dataTypeProperty.getIRI().toString();
-        for (OWLAnnotation edtDomainAnnotation : OWLOntologyUtil.getExtendedDataTableDomains(o, dataTypeProperty)) {
-            String tablePropertyIri = OWLOntologyUtil.getOWLAnnotationValueAsString(edtDomainAnnotation);
-            addExtendedDataTableProperty(tablePropertyIri, propertyIri, null, PUBLIC);
-        }
-    }
-
-    @Deprecated
-    protected final void addExtendedDataTableProperty(String tablePropertyIri, String propertyIri) {
-        addExtendedDataTableProperty(tablePropertyIri, propertyIri, null, PUBLIC);
-    }
-
-    protected void addExtendedDataTableProperty(String tablePropertyIri, String propertyIri, User user, String workspaceId) {
-        OntologyProperty tableProperty = getPropertyByIRI(tablePropertyIri, workspaceId);
-        checkNotNull(tableProperty, "Could not find table property: " + tablePropertyIri);
-
-        OntologyProperty property = getPropertyByIRI(propertyIri, workspaceId);
-        checkNotNull(property, "Could not find property: " + propertyIri);
-
-        addExtendedDataTableProperty(tableProperty, property, user, workspaceId);
-    }
-
-    protected abstract void addExtendedDataTableProperty(OntologyProperty tableProperty, OntologyProperty property, User user, String workspaceId);
-
     @Deprecated
     @Override
     public final OntologyProperty getOrCreateProperty(OntologyPropertyDefinition ontologyPropertyDefinition) {
@@ -734,9 +723,10 @@ public abstract class OntologyRepositoryBase implements OntologyRepository {
         if (property != null) {
             return property;
         }
-        OntologyProperty prop = addPropertyTo(
+        return addPropertyTo(
                 ontologyPropertyDefinition.getConcepts(),
                 ontologyPropertyDefinition.getRelationships(),
+                ontologyPropertyDefinition.getExtendedDataTableNames(),
                 ontologyPropertyDefinition.getPropertyIri(),
                 ontologyPropertyDefinition.getDisplayName(),
                 ontologyPropertyDefinition.getDataType(),
@@ -758,19 +748,12 @@ public abstract class OntologyRepositoryBase implements OntologyRepository {
                 user,
                 workspaceId
         );
-        if (ontologyPropertyDefinition.getExtendedDataTableDomains() != null) {
-            for (String extendedDataTableDomain : ontologyPropertyDefinition.getExtendedDataTableDomains()) {
-                OntologyProperty tableProperty = getPropertyByIRI(extendedDataTableDomain, workspaceId);
-                checkNotNull(tableProperty, "Could not find table property: " + extendedDataTableDomain);
-                addExtendedDataTableProperty(tableProperty, prop, user, workspaceId);
-            }
-        }
-        return prop;
     }
 
     protected abstract OntologyProperty addPropertyTo(
             List<Concept> concepts,
             List<Relationship> relationships,
+            List<String> extendedDataTableNames,
             String propertyIri,
             String displayName,
             PropertyType dataType,
@@ -1711,9 +1694,24 @@ public abstract class OntologyRepositoryBase implements OntologyRepository {
         }
         Object[] results = ExecutorServiceUtil.runAllAndWait(
                 () -> getConceptsWithProperties(workspaceId),
-                () -> getRelationships(workspaceId)
+                () -> getRelationships(workspaceId),
+                () -> getProperties(workspaceId)
         );
-        ontology = new Ontology((Iterable<Concept>) results[0], (Iterable<Relationship>) results[1], workspaceId);
+        Iterable<Concept> concepts = (Iterable<Concept>) results[0];
+        Iterable<Relationship> relationships = (Iterable<Relationship>) results[1];
+        Map<String, OntologyProperty> properties = stream((Iterable<OntologyProperty>) results[2])
+                .collect(Collectors.toMap(OntologyProperty::getIri, p -> p));
+        List<ExtendedDataTableProperty> extendedDataTables = properties.values().stream()
+                .filter(p -> p instanceof ExtendedDataTableProperty)
+                .map(p -> (ExtendedDataTableProperty) p)
+                .collect(Collectors.toList());
+        ontology = new Ontology(
+                concepts,
+                relationships,
+                extendedDataTables,
+                properties,
+                workspaceId
+        );
 
         // to avoid caching multiple unchanged ontologies
         if (!PUBLIC.equals(workspaceId) && ontology.getSandboxStatus() == SandboxStatus.PUBLIC) {
@@ -2145,9 +2143,9 @@ public abstract class OntologyRepositoryBase implements OntologyRepository {
         return workspaceId == null || PUBLIC.equals(workspaceId);
     }
 
-    protected void validateRelationship (String relationshipIRI,
-                                         Iterable<Concept> domainConcepts,
-                                         Iterable<Concept> rangeConcepts) {
+    protected void validateRelationship(String relationshipIRI,
+                                        Iterable<Concept> domainConcepts,
+                                        Iterable<Concept> rangeConcepts) {
         if (!relationshipIRI.equals(TOP_OBJECT_PROPERTY_IRI)
                 && (IterableUtils.isEmpty(domainConcepts) || IterableUtils.isEmpty(rangeConcepts))) {
             throw new VisalloException(relationshipIRI + " must have at least one domain and range ");

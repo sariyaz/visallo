@@ -17,7 +17,6 @@
         <module>email-extractor</module>
         <module>mime-type-ontology-mapper</module>
         <module>phone-number-extractor</module>
-        <module>reindex</module>
         <module>tika-mime-type</module>
         <module>tika-text-extractor</module>
         <module>zipcode-extractor</module>

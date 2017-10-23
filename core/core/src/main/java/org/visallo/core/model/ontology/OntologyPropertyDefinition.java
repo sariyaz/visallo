@@ -12,12 +12,12 @@ import java.util.Map;
 public class OntologyPropertyDefinition {
     private final List<Concept> concepts;
     private final List<Relationship> relationships;
+    private List<String> extendedDataTableNames;
     private final String propertyIri;
     private final String displayName;
     private final PropertyType dataType;
     private Map<String, String> possibleValues;
     private Collection<TextIndexHint> textIndexHints;
-    private Collection<String> extendedDataTableDomains;
     private boolean userVisible;
     private boolean searchable;
     private boolean addable;
@@ -93,12 +93,12 @@ public class OntologyPropertyDefinition {
         return this;
     }
 
-    public Collection<String> getExtendedDataTableDomains() {
-        return extendedDataTableDomains;
+    public List<String> getExtendedDataTableNames() {
+        return extendedDataTableNames;
     }
 
-    public OntologyPropertyDefinition setExtendedDataTableDomain(Collection<String> extendedDataTableDomains) {
-        this.extendedDataTableDomains = extendedDataTableDomains;
+    public OntologyPropertyDefinition setExtendedDataTableDomain(List<String> extendedDataTableNames) {
+        this.extendedDataTableNames = extendedDataTableNames;
         return this;
     }
 

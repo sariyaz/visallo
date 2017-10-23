@@ -2,25 +2,30 @@ package org.visallo.core.model.ontology;
 
 import org.visallo.web.clientapi.model.SandboxStatus;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
+
+import static org.visallo.core.util.StreamUtil.stream;
 
 public class Ontology {
     private final String workspaceId;
     private final Map<String, Concept> conceptsByIri;
     private final Map<String, Relationship> relationshipsByIri;
+    private final Map<String, ExtendedDataTableProperty> extendedDataTablesByIri;
     private final Map<String, OntologyProperty> propertiesByIri;
 
-    public Ontology(Iterable<Concept> concepts, Iterable<Relationship> relationships, String workspaceId) {
+    public Ontology(
+            Iterable<Concept> concepts,
+            Iterable<Relationship> relationships,
+            Iterable<ExtendedDataTableProperty> extendedDataTables,
+            Map<String, OntologyProperty> propertiesByIri,
+            String workspaceId
+    ) {
         this.workspaceId = workspaceId;
 
         Map<String, OntologyProperty> propertyMap = new HashMap<>();
 
-        conceptsByIri = Collections.unmodifiableMap(StreamSupport.stream(concepts.spliterator(), false)
+        conceptsByIri = Collections.unmodifiableMap(stream(concepts)
                 .collect(Collectors.toMap(Concept::getIRI, concept -> {
                     Collection<OntologyProperty> properties = concept.getProperties();
                     if (properties != null && properties.size() > 0) {
@@ -28,7 +33,7 @@ public class Ontology {
                     }
                     return concept;
                 })));
-        relationshipsByIri = Collections.unmodifiableMap(StreamSupport.stream(relationships.spliterator(), false)
+        relationshipsByIri = Collections.unmodifiableMap(stream(relationships)
                 .collect(Collectors.toMap(Relationship::getIRI, relationship -> {
                     Collection<OntologyProperty> properties = relationship.getProperties();
                     if (properties != null && properties.size() > 0) {
@@ -36,8 +41,16 @@ public class Ontology {
                     }
                     return relationship;
                 })));
+        extendedDataTablesByIri = Collections.unmodifiableMap(stream(extendedDataTables)
+                .collect(Collectors.toMap(ExtendedDataTableProperty::getIri, table -> {
+                    List<OntologyProperty> properties = stream(table.getTablePropertyIris())
+                            .map(propertiesByIri::get)
+                            .collect(Collectors.toList());
+                    properties.forEach(property -> propertyMap.put(property.getIri(), property));
+                    return table;
+                })));
 
-        propertiesByIri = Collections.unmodifiableMap(propertyMap);
+        this.propertiesByIri = Collections.unmodifiableMap(propertyMap);
     }
 
     public String getWorkspaceId() {
@@ -78,6 +91,10 @@ public class Ontology {
 
     public OntologyProperty getPropertyByIri(String iri) {
         return propertiesByIri.get(iri);
+    }
+
+    public Map<String, ExtendedDataTableProperty> getExtendedDataTablesByIri() {
+        return extendedDataTablesByIri;
     }
 
     public SandboxStatus getSandboxStatus() {

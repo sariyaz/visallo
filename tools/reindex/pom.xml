@@ -20,5 +20,10 @@
             <artifactId>visallo-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.vertexium</groupId>
+            <artifactId>vertexium-accumulo</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 </project>

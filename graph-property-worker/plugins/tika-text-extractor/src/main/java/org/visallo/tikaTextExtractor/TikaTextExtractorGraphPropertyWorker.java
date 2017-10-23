@@ -225,7 +225,7 @@ public class TikaTextExtractorGraphPropertyWorker extends GraphPropertyWorker {
 
             if (pageCountProperty != null) {
                 String numberOfPages = extractTextField(metadata, numberOfPagesKeys);
-                if (numberOfPages != null) {
+                if (!Strings.isNullOrEmpty(numberOfPages)) {
                     org.vertexium.Metadata numberOfPagesMetadata = data.createPropertyMetadata(getUser());
                     VisalloProperties.CONFIDENCE_METADATA.setMetadata(numberOfPagesMetadata, SYSTEM_ASSIGNED_CONFIDENCE, defaultVisibility);
                     pageCountProperty.addPropertyValue(m, propertyKey, Long.valueOf(numberOfPages), numberOfPagesMetadata, data.getProperty().getVisibility());

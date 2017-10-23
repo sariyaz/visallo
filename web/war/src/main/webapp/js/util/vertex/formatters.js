@@ -953,12 +953,12 @@ define([
                     optionalKey = null;
                 }
 
-                name = V.propName(name);
-
                 // This is now on the vertex, for performance just get it there
-                if (name === 'http://visallo.org#conceptType' && !optionalKey && vertex.conceptType) {
+                if ((name === 'http://visallo.org#conceptType' || name === 'conceptType') && !optionalKey && vertex.conceptType) {
                     return vertex.conceptType;
                 }
+
+                name = V.propName(name);
 
                 var value = V.propRaw(vertex, name, optionalKey, optionalOpts),
                     ignoreDisplayFormula = optionalOpts && optionalOpts.ignoreDisplayFormula,
