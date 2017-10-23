@@ -435,10 +435,10 @@ define([
 
             var baseLayerSource;
 
-            sourceOptions.crossOrigin = 'Anonymous';
+            sourceOptions.crossOrigin = 'anonymous';
 
             if (source in ol.source && _.isFunction(ol.source[source])) {
-                baseLayerSource = new ol.source[source](sourceOptions)
+                baseLayerSource = new ol.source[source](sourceOptions);
             } else {
                 console.error('Unknown map provider type: ', source);
                 throw new Error('map.provider is invalid')
