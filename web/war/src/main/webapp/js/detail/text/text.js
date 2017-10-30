@@ -60,8 +60,7 @@ define([
     var rangeUtils, d3, textStylesheet;
 
     /**
-     * Replaces the content of a collapsible text section in the element
-     * inspector.
+     * Replaces the content of a collapsible text section in the inspector.
      *
      * Only one extension can replace a given text section, the first one will
      * win.

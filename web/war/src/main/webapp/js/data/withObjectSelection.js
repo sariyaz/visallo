@@ -152,7 +152,7 @@ define([
 
         /**
          * Trigger this event to select edges or vertices. This will show blue selected
-         * background on these elements and open the Element Inspector.
+         * background on these elements and open the Inspector.
          *
          * @global
          * @event selectObjects

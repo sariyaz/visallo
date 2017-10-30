@@ -217,7 +217,7 @@ define([
                                 outputItem.vertex = {
                                     id: elementId,
                                     properties: [],
-                                    'http://visallo.org#visibilityJson': diffs[0]['http://visallo.org#visibilityJson']
+                                    'http://visallo.org#visibilityJson': diffs[0].visibilityJson
                                 };
                                 outputItem.title = diffs[0].title;
                             }

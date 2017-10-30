@@ -23,6 +23,7 @@ import org.visallo.core.model.user.*;
 import org.visallo.core.model.workQueue.WorkQueueRepository;
 import org.visallo.core.model.workspace.WorkspaceRepository;
 import org.visallo.core.security.ACLProvider;
+import org.visallo.core.security.AuditService;
 import org.visallo.core.security.VisibilityTranslator;
 import org.visallo.core.status.JmxMetricsManager;
 import org.visallo.core.status.MetricsManager;
@@ -180,6 +181,9 @@ public class VisalloBootstrap extends AbstractModule {
                 .in(Scopes.SINGLETON);
         bind(CacheService.class)
                 .toProvider(VisalloBootstrap.getConfigurableProvider(configuration, Configuration.CACHE_SERVICE))
+                .in(Scopes.SINGLETON);
+        bind(AuditService.class)
+                .toProvider(VisalloBootstrap.getConfigurableProvider(configuration, Configuration.AUDIT_SERVICE))
                 .in(Scopes.SINGLETON);
         bind(TimeRepository.class)
                 .toInstance(new TimeRepository());

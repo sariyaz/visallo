@@ -7,7 +7,7 @@
   "license": "Apache-2.0",
   "private": true,
   "dependencies": {
-    "cytoscape": "3.2.4",
+    "@visallo/cytoscape": "3.2.4",
     "cytoscape-dagre": "^1.6.0"
   },
   "scripts": {

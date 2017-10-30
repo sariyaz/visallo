@@ -10,7 +10,7 @@ define([
 
     const ACCESS_EXTENSION_PAGE = {
         identifier: 'access',
-        pageComponentPath: 'workspaces/userAccount/bundled/access/access'
+        pageComponentPath: 'workspaces/userAccount/bundled/access/Access'
     };
 
     const SETTINGS_EXTENSION_PAGE = {

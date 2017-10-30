@@ -61,7 +61,10 @@ var baseConfig = {
   },
   externals: VisalloAmdExternals,
   resolve: {
-    extensions: ['.js', '.jsx', '.hbs', '.ejs']
+    extensions: ['.js', '.jsx', '.hbs', '.ejs'],
+    alias: {
+        cytoscape: path.resolve(__dirname, 'node_modules/@visallo/cytoscape')
+    }
   },
   module: {
     rules: [

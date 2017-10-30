@@ -2,6 +2,13 @@
 # yarn lockfile v1
 
 
+"@visallo/cytoscape@3.2.4":
+  version "3.2.4"
+  resolved "https://registry.yarnpkg.com/@visallo/cytoscape/-/cytoscape-3.2.4.tgz#5c65423484052a234c9e4cc8f115855d3df02146"
+  dependencies:
+    heap "^0.2.6"
+    lodash.debounce "^4.0.8"
+
 "@visallo/updeep@^1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@visallo/updeep/-/updeep-1.0.1.tgz#f0fe085885f9f6b319867491d42486b75d7048d0"
@@ -1216,13 +1223,6 @@ cytoscape-dagre@^1.6.0:
   resolved "https://registry.yarnpkg.com/cytoscape-dagre/-/cytoscape-dagre-1.6.0.tgz#10abcc30ef348b60132cad64820b66ddc7fcd069"
   dependencies:
     dagre "~0.7.4"
-
-cytoscape@3.2.4:
-  version "3.2.4"
-  resolved "https://registry.yarnpkg.com/cytoscape/-/cytoscape-3.2.4.tgz#19832dfe621c279c6b4340a736128dce09399314"
-  dependencies:
-    heap "^0.2.6"
-    lodash.debounce "^4.0.8"
 
 d@1:
   version "1.0.0"

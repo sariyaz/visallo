@@ -9,6 +9,7 @@ import org.json.JSONObject;
 import org.visallo.core.exception.VisalloAccessDeniedException;
 import org.visallo.core.model.user.UserNameAuthorizationContext;
 import org.visallo.core.model.user.UserRepository;
+import org.visallo.core.security.AuditService;
 import org.visallo.core.user.User;
 import org.visallo.web.CurrentUser;
 import org.visallo.web.util.RemoteAddressUtil;
@@ -18,10 +19,15 @@ import javax.servlet.http.HttpServletRequest;
 @Singleton
 public class Login implements ParameterizedHandler {
     private final UserRepository userRepository;
+    private final AuditService auditService;
 
     @Inject
-    public Login(UserRepository userRepository) {
+    public Login(
+            UserRepository userRepository,
+            AuditService auditService
+    ) {
         this.userRepository = userRepository;
+        this.auditService = auditService;
     }
 
     @Handle
@@ -41,6 +47,7 @@ public class Login implements ParameterizedHandler {
             );
             userRepository.updateUser(user, authorizationContext);
             CurrentUser.set(request, user.getUserId(), user.getUsername());
+            auditService.auditLogin(user);
             JSONObject json = new JSONObject();
             json.put("status", "OK");
             return json;

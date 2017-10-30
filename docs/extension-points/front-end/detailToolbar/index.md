@@ -1,9 +1,9 @@
-# Element Inspector Toolbar
+# Inspector Toolbar
 
-* [Element Inspector Toolbar JavaScript API `org.visallo.detail.toolbar`](../../../javascript/org.visallo.detail.toolbar.html)
-* [Element Inspector Toolbar Example Code](https://github.com/visallo/doc-examples/tree/master/extension-detail-toolbar)
+* [Inspector Toolbar JavaScript API `org.visallo.detail.toolbar`](../../../javascript/org.visallo.detail.toolbar.html)
+* [Inspector Toolbar Example Code](https://github.com/visallo/doc-examples/tree/master/extension-detail-toolbar)
 
-Allows additional toolbar items to be added to the Element Inspector.
+Allows additional toolbar items to be added to the Inspector.
 
 <div style="text-align:center">
 <img src="./item.png" width="100%" style="max-width: 335px;">

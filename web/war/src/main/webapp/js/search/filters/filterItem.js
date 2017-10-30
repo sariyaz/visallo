@@ -375,7 +375,9 @@ define([
                 properties: this.attr.properties,
                 onlySearchable: true,
                 creatable: false,
-                placeholder: i18n('search.filters.add_filter.placeholder')
+                placeholder: i18n('search.filters.add_filter.placeholder'),
+                rollupCompound: false,
+                hideCompound: true
             });
         };
 

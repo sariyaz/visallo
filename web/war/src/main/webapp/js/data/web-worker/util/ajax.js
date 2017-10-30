@@ -1,6 +1,6 @@
 
 /*global File:false*/
-define(['util/promise'], function(Promise) {
+define(['util/promise', './cancel'], function(Promise, cancelPreviousByHash) {
     'use strict';
 
     RequestFailed.prototype = Object.create(Error.prototype);
@@ -59,7 +59,7 @@ define(['util/promise'], function(Promise) {
         return str.slice(0, str.length - 1);
     }
 
-    function ajax(method, url, parameters, debugOptions) {
+    function ajax(method, url, parameters, { cancelHash } = {}, debugOptions) {
         var isJson = true,
             methodRegex = /^(.*)->HTML$/;
         method = method.toUpperCase();
@@ -170,6 +170,10 @@ define(['util/promise'], function(Promise) {
 
                 r.send(formData);
             });
+
+        if (cancelHash) {
+            cancelPreviousByHash(promise, cancelHash);
+        }
 
         return promise;
     }

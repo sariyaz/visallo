@@ -4,7 +4,7 @@
 * [Layout Component Example Code](https://github.com/visallo/doc-examples/tree/master/extension-layout-component)
 
 
-The Element Inspector is rendered using a custom layout engine consisting of a tree of layout components. This layout engine can be used elsewhere to display elements using different `contexts` also.
+The Inspector is rendered using a custom layout engine consisting of a tree of layout components. This layout engine can be used elsewhere to display elements using different `contexts` also.
 
 *Layout Components* are nodes in the layout tree that define the type of layout and what children are included in the layout. 
 

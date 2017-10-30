@@ -15,7 +15,7 @@ define([
     ontologySelectors,
     ontologyActions) {
 
-    const FilterProps = ['dataType', 'deleteable', 'searchable', 'sortable', 'updateable', 'userVisible'];
+    const FilterProps = ['dataType', 'deleteable', 'searchable', 'sortable', 'updateable', 'userVisible', 'addable'];
     const FilterPropDefaults = {
         userVisible: true
     };
@@ -25,6 +25,7 @@ define([
             filter: PropTypes.shape({
                 conceptId: PropTypes.string,
                 relationshipId: PropTypes.string,
+                hideCompound: PropTypes.bool,
                 addable: PropTypes.bool,
                 userVisible: PropTypes.bool,
                 searchable: PropTypes.bool,
@@ -76,6 +77,9 @@ define([
                     const relationshipProp = relationshipProps && relationshipProps[p.title];
                     formProps.domain = filter.relationshipId;
                     test = test && Boolean(relationshipProp);
+                }
+                if (test && filter && filter.hideCompound) {
+                    test = test && !p.dependentPropertyIris;
                 }
                 if (test && filter && filter.rollupCompound && p.dependentPropertyIris) {
                     dependentPropertyIris.push(...p.dependentPropertyIris);

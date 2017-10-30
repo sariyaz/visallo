@@ -4,11 +4,13 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.google.inject.Inject;
 import org.vertexium.ElementType;
+import org.vertexium.Graph;
 import org.vertexium.GraphWithSearchIndex;
 import org.vertexium.Range;
 import org.vertexium.accumulo.AccumuloGraph;
 import org.visallo.core.cmdline.CommandLineTool;
 import org.visallo.core.exception.VisalloException;
+import org.visallo.core.model.graph.ProxyGraph;
 import org.visallo.core.model.longRunningProcess.LongRunningProcessRepository;
 import org.visallo.core.model.longRunningProcess.ReindexLongRunningProcessQueueItem;
 import org.visallo.core.util.VisalloLogger;
@@ -122,10 +124,15 @@ public class Reindex extends CommandLineTool {
     }
 
     private List<String> getSplitsFromAccumuloGraph(ElementType elementType) {
-        if (!(getGraph() instanceof AccumuloGraph)) {
+        Graph graph = getGraph();
+        while (graph instanceof ProxyGraph) {
+            graph = ((ProxyGraph) graph).getProxiedGraph();
+        }
+
+        if (!(graph instanceof AccumuloGraph)) {
             return null;
         }
-        AccumuloGraph accumuloGraph = (AccumuloGraph) getGraph();
+        AccumuloGraph accumuloGraph = (AccumuloGraph) graph;
         Iterable<Range> splits;
         switch (elementType) {
             case VERTEX:

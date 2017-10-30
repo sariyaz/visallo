@@ -30,7 +30,7 @@ define([
                     const offsetMinutes = parseInt(components[0], 10);
                     const offset = F.timezone.offsetDisplay(offsetMinutes);
                     const tzPretty = tz.replace(/_/g, ' ');
-                    return (<option value={tz}>{offset} {tzPretty}{tzInfo.dst ? '*' : ''}</option>);
+                    return (<option key={key} value={tz}>{offset} {tzPretty}{tzInfo.dst ? '*' : ''}</option>);
                 })}
             </select>);
         }

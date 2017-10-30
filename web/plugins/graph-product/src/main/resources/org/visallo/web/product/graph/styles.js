@@ -10,7 +10,7 @@ define([], function() {
 
     return function({ pixelRatio, edgesCount, edgeLabels, styleExtensions }) {
 
-        return getDefaultStyles().concat(getExtensionStyles());
+        return getDefaultStyles().concat(getExtensionStyles(), getSelectionStyles());
 
         function getExtensionStyles() {
             // Mock the cytoscape style fn api to the json style
@@ -50,6 +50,40 @@ define([], function() {
                 }
                 return api;
             }
+        }
+
+        function getSelectionStyles() {
+            return [
+                {
+                    selector: 'node:selected',
+                    css: {
+                        'display': 'element',
+                        'opacity': 1,
+                        'background-image-opacity': 1,
+                        'background-color': '#0088cc',
+                        'border-color': '#0088cc',
+                        'color': '#0088cc'
+                    }
+                },
+                {
+                    selector: 'node[selectedImageSrc]:selected',
+                    css: {
+                        'background-image': 'data(selectedImageSrc)'
+                    }
+                },
+                {
+                    selector: 'edge:selected',
+                    css: {
+                        'display': 'element',
+                        'opacity': 1,
+                        'line-color': '#0088cc',
+                        'color': '#0088cc',
+                        'target-arrow-color': '#0088cc',
+                        'source-arrow-color': '#0088cc'
+                    }
+                }
+
+            ];
         }
 
         function getDefaultStyles() {
@@ -139,21 +173,6 @@ define([], function() {
                         'background-image': 'data(imageSrc)',
                         shape: 'rectangle',
                         content: 'data(truncatedTitle)',
-                    }
-                },
-                {
-                    selector: 'node:selected',
-                    css: {
-                        'background-color': '#0088cc',
-                        'border-color': '#0088cc',
-                        'border-width': 2 * pixelRatio,
-                        color: '#0088cc'
-                    }
-                },
-                {
-                    selector: 'node[selectedImageSrc]:selected',
-                    css: {
-                        'background-image': 'data(selectedImageSrc)'
                     }
                 },
                 {
@@ -270,16 +289,6 @@ define([], function() {
                     css: {
                         'border-width': 5 * pixelRatio,
                         'border-color': '#a5e1ff'
-                    }
-                },
-                {
-                    selector: 'edge:selected',
-                    css: {
-                        'line-color': '#0088cc',
-                        color: '#0088cc',
-                        'target-arrow-color': '#0088cc',
-                        'source-arrow-color': '#0088cc',
-                        width: 4 * pixelRatio
                     }
                 },
                 {

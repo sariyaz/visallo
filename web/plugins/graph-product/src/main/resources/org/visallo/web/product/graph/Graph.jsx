@@ -1187,7 +1187,7 @@ define([
 
         resetQueuedSelection(sel) {
             this._queuedSelection = sel ? {
-                add: { vertices: sel.vertices, edges: sel.edges },
+                add: { vertices: { ...sel.vertices }, edges: { ...sel.edges }},
                 remove: {vertices: {}, edges: {}}
             } : { add: {vertices: {}, edges: {}}, remove: {vertices: {}, edges: {}} };
 

@@ -4,6 +4,7 @@ import org.visallo.core.bootstrap.InjectHelper;
 import org.visallo.core.model.user.UserRepository;
 import org.visallo.core.model.user.UserSessionCounterRepository;
 import org.visallo.core.model.workQueue.WorkQueueRepository;
+import org.visallo.core.security.AuditService;
 import org.visallo.core.user.User;
 import org.visallo.core.util.VisalloLogger;
 import org.visallo.core.util.VisalloLoggerFactory;
@@ -36,6 +37,7 @@ public class SessionUser implements HttpSessionBindingListener, Serializable {
         try {
             UserSessionCounterRepository userSessionCounterRepository = InjectHelper.getInstance(UserSessionCounterRepository.class);
             WorkQueueRepository workQueueRepository = InjectHelper.getInstance(WorkQueueRepository.class);
+            AuditService auditService = InjectHelper.getInstance(AuditService.class);
 
             int sessionCount = userSessionCounterRepository.deleteSession(userId, event.getSession().getId());
             if (sessionCount < 1) {
@@ -44,6 +46,7 @@ public class SessionUser implements HttpSessionBindingListener, Serializable {
                 UserRepository userRepository = InjectHelper.getInstance(UserRepository.class);
                 User user = userRepository.setStatus(userId, status);
                 workQueueRepository.pushUserStatusChange(user, status);
+                auditService.auditLogout(userId);
             }
             workQueueRepository.pushSessionExpiration(userId, event.getSession().getId());
         } catch (Exception ex) {

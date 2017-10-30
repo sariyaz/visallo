@@ -18,6 +18,7 @@ import org.visallo.core.model.user.UserSessionCounterRepository;
 import org.visallo.core.model.workQueue.WorkQueueRepository;
 import org.visallo.core.model.workspace.Workspace;
 import org.visallo.core.model.workspace.WorkspaceRepository;
+import org.visallo.core.security.AuditService;
 import org.visallo.core.status.JmxMetricsManager;
 import org.visallo.core.user.User;
 import org.visallo.core.util.VisalloLogger;
@@ -48,6 +49,7 @@ public class Messaging implements AtmosphereHandler { //extends AbstractReflecto
     private static final VisalloLogger LOGGER = VisalloLoggerFactory.getLogger(Messaging.class);
 
     private UserRepository userRepository;
+    private AuditService auditService;
 
     // TODO should we save off this broadcaster? When using the BroadcasterFactory
     //      we always get null when trying to get the default broadcaster
@@ -172,8 +174,10 @@ public class Messaging implements AtmosphereHandler { //extends AbstractReflecto
 
         boolean lastSession = decrementUserSessionCount(event.getResource());
         if (lastSession) {
-            LOGGER.info("last session for user %s", getCurrentUserId(event.getResource()));
+            String userId = getCurrentUserId(event.getResource());
+            LOGGER.info("last session for user %s", userId);
             setStatus(event.getResource(), UserStatus.OFFLINE);
+            auditService.auditLogout(userId);
         }
     }
 
@@ -275,6 +279,11 @@ public class Messaging implements AtmosphereHandler { //extends AbstractReflecto
     @Inject
     public void setUserRepository(UserRepository userRepository) {
         this.userRepository = userRepository;
+    }
+
+    @Inject
+    public void setAuditService(AuditService auditService) {
+        this.auditService = auditService;
     }
 
     @Inject

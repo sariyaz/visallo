@@ -6,11 +6,12 @@
  * @attr {Array.<object>=} properties The ontology properties to populate the list with, if not provided will use visible properties
  * @attr {string} [placeholder=Select Property] the placeholder text to display
  * @attr {boolean} [creatable=true] Allow creation of new properties if the user has ONTOLOGY_ADD privilege
- * @attr {boolean} [limitParentConceptId=''] Only show properties that are attached to this concept or it's descendents
+ * @attr {boolean} [limitParentConceptId=''] Only show properties that are attached to this concept or it's descendants
  * @attr {boolean} [onlySearchable=false] Only show properties that have searchable attribute equal to true in ontology
  * @attr {boolean} [onlySortable=false] Only show properties that have sortable attribute equal to true in ontology
  * @attr {string} [onlyDataTypes=[]] Only show properties that have matching data type in ontology
- * @attr {boolean} [rollupCompound=true] Hide all dependant properties and only show the compound/parent fields
+ * @attr {boolean} [hideCompound=false] Hide all compound/parent fields
+ * @attr {boolean} [rollupCompound=true] Hide all dependent properties and only show the compound/parent fields
  * @attr {boolean} [focus=false] Activate the field for focus when finished rendering
  * @attr {string} [selectedProperty=''] Default the selection to this property IRI
  * @fires module:components/PropertySelect#propertyselected
@@ -87,6 +88,7 @@ define([
             const {
                 filter = {},
                 rollupCompound = true,
+                hideCompound = false,
                 focus,
                 placeholder,
                 properties,
@@ -119,7 +121,7 @@ define([
             this.attacher = attacher()
                 .node(this.node)
                 .params({
-                    filter: { ...filter, rollupCompound },
+                    filter: { ...filter, rollupCompound, hideCompound },
                     value: this.attr.selectedProperty,
                     autofocus: focus === true,
                     creatable: this.attr.creatable !== false,

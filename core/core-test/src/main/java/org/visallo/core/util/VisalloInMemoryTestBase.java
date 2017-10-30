@@ -28,7 +28,9 @@ import org.visallo.core.model.workQueue.TestWorkQueueRepository;
 import org.visallo.core.model.workQueue.WorkQueueRepository;
 import org.visallo.core.model.workspace.*;
 import org.visallo.core.model.workspace.product.WorkProductService;
+import org.visallo.core.security.AuditService;
 import org.visallo.core.security.DirectVisibilityTranslator;
+import org.visallo.core.security.LoggingAuditService;
 import org.visallo.core.security.VisibilityTranslator;
 import org.visallo.core.time.TimeRepository;
 import org.visallo.core.user.User;
@@ -66,6 +68,7 @@ public abstract class VisalloInMemoryTestBase {
     private CacheService cacheService;
     private Map configurationMap;
     private ArtifactThumbnailRepository artifactThumbnailRepository;
+    private AuditService auditService;
 
     @Before
     public void before() {
@@ -95,6 +98,7 @@ public abstract class VisalloInMemoryTestBase {
         configurationMap = null;
         cacheService = null;
         artifactThumbnailRepository = null;
+        auditService = null;
     }
 
     protected WorkspaceRepository getWorkspaceRepository() {
@@ -506,5 +510,13 @@ public abstract class VisalloInMemoryTestBase {
                 getOntologyRepository()
         );
         return artifactThumbnailRepository;
+    }
+
+    public AuditService getAuditService() {
+        if (auditService != null) {
+            return auditService;
+        }
+        auditService = new LoggingAuditService();
+        return auditService;
     }
 }

@@ -442,7 +442,9 @@ define([
                     selectedProperty: options.selected && ontology.properties.byTitle[options.selected] || null,
                     properties: self.filterProperties(propertiesToFilter),
                     showAdminProperties: true,
-                    placeholder: options.placeholder || ''
+                    placeholder: options.placeholder || '',
+                    rollupCompound: false,
+                    hideCompound: true
                 });
             });
         };

@@ -98,6 +98,8 @@ define([
                 creatable: false,
                 onlySearchable: true,
                 onlySortable: true,
+                rollupCompound: false,
+                hideCompound: true,
                 placeholder: i18n('search.sort.placeholder')
             });
         };

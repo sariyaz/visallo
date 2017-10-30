@@ -16,6 +16,7 @@ public class ClientApiUser implements ClientApiObject {
     private String currentWorkspaceName;
     private String csrfToken;
     private Date currentLoginDate;
+    private Date previousLoginDate;
     private Set<String> privileges = new HashSet<String>();
     private JsonNode uiPreferences;
     private List<String> authorizations = new ArrayList<String>();
@@ -77,6 +78,14 @@ public class ClientApiUser implements ClientApiObject {
 
     public void setCurrentLoginDate(Date currentLoginDate) {
         this.currentLoginDate = currentLoginDate;
+    }
+
+    public Date getPreviousLoginDate() {
+        return previousLoginDate;
+    }
+
+    public void setPreviousLoginDate(Date previousLoginDate) {
+        this.previousLoginDate = previousLoginDate;
     }
 
     public void setEmail(String email) {

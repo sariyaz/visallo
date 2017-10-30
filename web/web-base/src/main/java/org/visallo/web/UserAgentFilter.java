@@ -26,7 +26,7 @@ public class UserAgentFilter implements RequestResponseHandler {
 
     static {
         MINIMUM_VERSION_BROWSERS.put("IE", new VersionNumber("11"));
-        MINIMUM_VERSION_BROWSERS.put("Firefox", new VersionNumber("38"));
+        MINIMUM_VERSION_BROWSERS.put("Firefox", new VersionNumber("52"));
     }
 
     private final UserAgentStringParser parser = UADetectorServiceFactory.getResourceModuleParser();

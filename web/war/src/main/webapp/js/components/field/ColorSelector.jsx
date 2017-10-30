@@ -24,23 +24,33 @@ define([
             onSelected: PropTypes.func.isRequired,
             value: PropTypes.string
         },
+
         getDefaultProps() {
             return { value: BLACK };
         },
+
         getInitialState() {
             return { value: this.props.value };
         },
+
         componentWillMount() {
             this.cssIdentifier = `_cs-${CssIdentifier++}`;
         },
+
         componentDidMount() {
             this.publish = _.debounce(this._publish, 100);
         },
+
         componentWillReceiveProps(nextProps) {
             if (this.state.value !== nextProps.value) {
                 this.setState({ value: nextProps.value || BLACK })
             }
         },
+
+        componentWillUnmount() {
+            clearTimeout(this._hideTooltip);
+        },
+
         render() {
             const { value, colorTooltip } = this.state;
             const black = this.isBlack();
@@ -78,19 +88,23 @@ define([
                 </div>
             )
         },
+
         isBlack() {
             return this.state.value === BLACK;
         },
+
         onClickBlack() {
             if (!this.isBlack()) {
                 this.update(BLACK);
             }
         },
+
         onMouseDownBlack() {
             if (!this.isBlack()) {
                 this.update(BLACK);
             }
         },
+
         onChange(event) {
             const color = colorjs({ hue: event.target.value, saturation, lightness }).toCSSHex();
             this.update(color);
@@ -102,10 +116,12 @@ define([
                 this.setState({ colorTooltip: false })
             }, 750);
         },
+
         update(newValue) {
             this.setState({ value: newValue });
             this.publish(newValue);
         },
+
         _publish(newValue) {
             this.props.onSelected(newValue);
         }

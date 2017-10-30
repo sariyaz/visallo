@@ -105,7 +105,7 @@ define([
                 <h4 className="settings-group-title">{i18n(this.props.groupKey)}</h4>
                 <ul className="settings-group">
                     {settings.map(setting => {
-                        return (<SettingsSetting setting={setting}/>);
+                        return (<SettingsSetting key={setting.identifier} setting={setting}/>);
                     })}
                 </ul>
             </li>);
@@ -132,7 +132,7 @@ define([
             return (
                 <ul className="general-settings">
                     {groupKeys.map(groupKey => {
-                        return (<SettingsGroup groupKey={groupKey} settings={groups[groupKey]}/>);
+                        return (<SettingsGroup key={groupKey} groupKey={groupKey} settings={groups[groupKey]}/>);
                     })}
                 </ul>
             );

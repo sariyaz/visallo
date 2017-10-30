@@ -39,7 +39,7 @@ define([
      * registry.registerExtension('org.visallo.detail.toolbar', { divider: true })
      */
     registry.documentExtensionPoint('org.visallo.detail.toolbar',
-        'Add Element Inspector toolbar items',
+        'Add Inspector toolbar items',
         function(e) {
             return e.divider || (('event' in e) && ('title' in e));
         },

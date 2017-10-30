@@ -45,7 +45,7 @@ define([
      * @param {array.<org.visallo.layout.component~child>} [children] Children items to render
      */
     registry.documentExtensionPoint('org.visallo.layout.component',
-        'Define the layout of the Element Inspector based on content',
+        'Define the layout of the Inspector based on content',
         function(e) {
             if (!_.isFunction(e.applyTo) && _.isObject(e.applyTo)) {
                 var optionalApplyToIsValid = null;

@@ -68,7 +68,7 @@ define([
 
     function formatVisibility(propertyOrProperties) {
         const property = Array.isArray(propertyOrProperties) ? propertyOrProperties[0] : propertyOrProperties;
-        return JSON.stringify(property['http://visallo.org#visibilityJson']);
+        return property['http://visallo.org#visibilityJson'];
     }
 
     function formatValue(name, change, property) {

@@ -88,13 +88,13 @@ repository.ontology.owl.default.dir=$VISALLO_DIR/config/ontology-sample
     ```xml
     <visallo:displayType>textarea</visallo:displayType>
     ```
-* **propertyGroup** - Allows multiple properties to be included under a unified collapsible header in the element inspector. All properties that match the value (case-sensitive) will be placed in a section.
+* **propertyGroup** - Allows multiple properties to be included under a unified collapsible header in the Inspector. All properties that match the value (case-sensitive) will be placed in a section.
 
     ```xml
     <visallo:propertyGroup xml:lang="en">My Group</visallo:propertyGroup>
     ```
 
-* **possibleValues** - Creates a pick list on the UI. The value is a JSON document describing the possible values. In this example, `F` will be the raw value saved in the property value, but `Female` would be displayed to user in pick list and in the element inspector.
+* **possibleValues** - Creates a pick list on the UI. The value is a JSON document describing the possible values. In this example, `F` will be the raw value saved in the property value, but `Female` would be displayed to user in pick list and in the Inspector.
 
     ```json
     {

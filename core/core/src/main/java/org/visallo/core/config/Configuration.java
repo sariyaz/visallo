@@ -58,6 +58,7 @@ public class Configuration {
     public static final String AUTHORIZATION_REPOSITORY = "repository.authorization";
     public static final String PRIVILEGE_REPOSITORY = "repository.privilege";
     public static final String CACHE_SERVICE = "service.cache";
+    public static final String AUDIT_SERVICE = "service.audit";
     public static final String GRAPH_PROVIDER = "graph";
     public static final String VISIBILITY_TRANSLATOR = "security.visibilityTranslator";
     public static final String WEB_CONFIGURATION_PREFIX = "web.ui.";

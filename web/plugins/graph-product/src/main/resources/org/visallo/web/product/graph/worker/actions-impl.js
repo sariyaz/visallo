@@ -125,7 +125,11 @@ define([
                 });
             }
 
-            return ajax('POST', '/product/graph/vertices/update', { productId, updates: updateVertices }).then(() => {
+            const request = ajax(
+                'POST', '/product/graph/vertices/update',
+                { productId, updates: updateVertices },
+                { cancelHash: `${productId}|${Object.keys(updateVertices).join('|')}` }
+            ).then(() => {
                 if (addingNewVertices) {
                     return ajax('GET', '/product', { productId,
                         includeExtended: true,
@@ -143,6 +147,8 @@ define([
                     });
                 }
             });
+
+            return request;
         },
 
         undoSetPositions: ({ productId, updateVertices, removeElements }) => (dispatch, getState) => {

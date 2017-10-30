@@ -1,9 +1,9 @@
-# Element Inspector Text
+# Inspector Text
 
-* [Element Inspector Text JavaScript API `org.visallo.detail.text`](../../../javascript/org.visallo.detail.text.html)
-* [Element Inspector Text Example Code](https://github.com/visallo/doc-examples/tree/master/extension-detail-text)
+* [Inspector Text JavaScript API `org.visallo.detail.text`](../../../javascript/org.visallo.detail.text.html)
+* [Inspector Text Example Code](https://github.com/visallo/doc-examples/tree/master/extension-detail-text)
 
-Replace the default text collapsible section content in the Element Inspector.
+Replace the default text collapsible section content in the Inspector.
 
 <div class="alert alert-warning">
 The console will show a warning if multiple extensions are found for a given vertex, name, and key. The extension used is non-deterministic.
