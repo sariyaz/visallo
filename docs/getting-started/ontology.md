@@ -138,6 +138,7 @@ repository.ontology.owl.default.dir=$VISALLO_DIR/config/ontology-sample
         * `pluralDisplayName` The plural display name of type
         * `properties` The property iris defined on this type
     * `prop`: Function that accepts a property IRI and returns the display value.
+    * `props`: Function that accepts a property IRI and returns a list of all matching properties.
     * `propRaw`: Function that accepts a property IRI and returns the raw value.
 
     ```xml

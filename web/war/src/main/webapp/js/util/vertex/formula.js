@@ -11,7 +11,8 @@ define([], function() {
 
         var prop = function(name) { return V.prop(vertex, name, optionalKey, optionalOpts); },
             propRaw = function(name) { return V.propRaw(vertex, name, optionalKey, optionalOpts); },
-            longestProp = function(optionalName) { return V.longestProp(vertex, optionalName); };
+            longestProp = function(optionalName) { return V.longestProp(vertex, optionalName); },
+            props = function (name) { return V.props(vertex, name, optionalKey ); }
 
         try {
 
@@ -24,7 +25,8 @@ define([], function() {
                 prop: prop,
                 dependentProp: prop,
                 propRaw: propRaw,
-                longestProp: longestProp
+                longestProp: longestProp,
+                props: props
             });
 
             if (V.isEdge(vertex)) {

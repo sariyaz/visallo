@@ -970,12 +970,6 @@ define([
             props: function(vertex, name, optionalKey) {
                 checkVertexAndPropertyNameArguments(vertex, name);
 
-                var hasKey = !_.isUndefined(optionalKey);
-
-                if (arguments.length === 3 && !hasKey) {
-                    throw new Error('Undefined key is not allowed. Remove parameter to return all named properties');
-                }
-
                 name = V.propName(name);
 
                 var ontologyProperty = getProperty(name),
@@ -1304,6 +1298,7 @@ define([
                 prop: _.wrap(V.prop, capture),
                 propRaw: _.wrap(V.propRaw, capture),
                 longestProp: _.wrap(V.longestProp, capture),
+                props: _.wrap(V.props, capture),
                 isEdge: V.isEdge
             }, undefined, { additionalScope: additionalScope });
         }

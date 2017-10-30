@@ -400,11 +400,6 @@ define([
 
                 expect(property).to.be.an('array').that.has.property('length').that.equals(0)
             })
-            it('should throw error if key is passed but is undefined', function() {
-                expect(function() {
-                    V.props(vertexFactory(), PROPERTY_NAME_FIRST, undefined);
-                }).to.throw('Undefined key')
-            })
             it('should not throw error if key is passed is empty string', function() {
                 var vertex = vertexFactory([
                         propertyFactory(PROPERTY_NAME_TITLE, '', 'jason'),
