@@ -121,7 +121,7 @@ define([
                             if (normal && normal.length) {
                                 const radius = getRadiusFromStyles(normal);
                                 featureValues._nodeRadius = radius
-                                if (selected.length === 0) {
+                                if (selected.length === 0 && normal[0].getImage()) {
                                     const newSelected = normal[0].clone();
                                     const newStroke = new ol.style.Stroke({
                                         color: '#0088cc',
@@ -144,10 +144,18 @@ define([
 
                         if (id in existingFeatures) {
                             const existingFeature = existingFeatures[id];
-                            const existingValues = _.omit(existingFeature.getProperties(), 'geometry', 'element')
-                            const newValues = _.omit(featureValues, 'geometry', 'element')
-                            if (!_.isEqual(existingValues, newValues)) {
+                            let diff = _.any(existingFeature.getProperties(), (val, name) => {
+                                if (name === 'styles' || name === 'interacting') return false;
+                                if (val !== featureValues[name]) {
+                                    return true
+                                }
+                                return false;
+                            })
+                            if (diff) {
                                 changed = true
+                                if (existingFeature.get('interacting')) {
+                                    delete featureValues.geometry;
+                                }
                                 existingFeature.setProperties(featureValues)
                             }
                             delete existingFeatures[id];
@@ -414,7 +422,7 @@ define([
         getDefaultViewParameters() {
             return {
                 zoom: 2,
-                minZoom: 2,
+                minZoom: 1,
                 center: [0, 0]
             };
         },
@@ -466,7 +474,11 @@ define([
         configureAncillary() {
             const createLayer = type => {
                 const source = new ol.source.Vector({ features: [] });
-                const layer = new ol.layer.Vector({ id: `${type}Layer`, source });
+                const layer = new ol.layer.Vector({
+                    id: `${type}Layer`,
+                    source,
+                    style: ancillary => this._ancillaryStyle(ancillary)
+                });
                 return { source, layer }
             }
 
@@ -528,6 +540,16 @@ define([
                     anchor: feature.get('iconAnchor')
                 })
             })]
+        },
+
+        _ancillaryStyle(ancillary) {
+            const extensionStyles = ancillary.get('styles');
+            if (extensionStyles) {
+                const { normal } = extensionStyles;
+                if (normal.length) {
+                    return normal;
+                }
+            }
         },
 
         _clusterStyle(cluster, { selected = false } = {}) {
