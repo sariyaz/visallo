@@ -123,9 +123,10 @@ define([
                                 featureValues._nodeRadius = radius
                                 if (selected.length === 0) {
                                     const newSelected = normal[0].clone();
+                                    const unselectedStroke = normal[0].getImage().getStroke();
                                     const newStroke = new ol.style.Stroke({
                                         color: '#0088cc',
-                                        width: normal[0].getImage().getStroke().getWidth() || 1
+                                        width: unselectedStroke && unselectedStroke.getWidth() || 1
                                     })
                                     newSelected.image_ = normal[0].getImage().clone({
                                         stroke: newStroke,
