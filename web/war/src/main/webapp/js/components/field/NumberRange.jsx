@@ -31,9 +31,10 @@ define([
         render() {
             const { value, min, max, step, editable, displayTooltip, labelRenderer, onChange } = this.props;
             const percent = calculatePercent(min, max, value);
+            const hasValue = value !== undefined && value !== null;
 
             return (
-                <div className={classNames('number-range-wrapper', { 'empty': value === undefined || value === null })}>
+                <div className={classNames('number-range-wrapper', { 'empty': !hasValue })}>
                     <input
                         ref={r => { this.input = r }}
                         className="number-range-input"
@@ -52,7 +53,9 @@ define([
                             transform: 'translate(-50%, 0px)'
                         }}>
                             <div className="tooltip-arrow"></div>
-                            <div style={{ background: 'black' }} className="tooltip-inner">{ labelRenderer(value) }</div>
+                            <div style={{ background: 'black' }} className="tooltip-inner">
+                                { hasValue ? labelRenderer(value) : null }
+                            </div>
                         </div>
                     : null}
                 </div>
