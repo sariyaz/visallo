@@ -16,10 +16,7 @@ define([], function() {
 
         promise.then(() => {
             delete requestCache[hash];
-            console.log('Cleaning up', hash, requestCache)
         })
-
-        console.log('Adding', hash, requestCache)
 
         return promise;
     }
