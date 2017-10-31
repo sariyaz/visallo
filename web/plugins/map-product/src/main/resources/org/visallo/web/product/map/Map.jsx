@@ -213,9 +213,12 @@ define([
         onContextTap({map, pixel, originalEvent}) {
             const vertexIds = [];
             map.forEachFeatureAtPixel(pixel, cluster => {
-                cluster.get('features').forEach(f => {
-                    vertexIds.push(f.getId());
-                })
+                const features = cluster.get('features');
+                if (features) {
+                    features.forEach(f => {
+                        vertexIds.push(f.getId());
+                    })
+                }
             })
 
             if (vertexIds.length) {

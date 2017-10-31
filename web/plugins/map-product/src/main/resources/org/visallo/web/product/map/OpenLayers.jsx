@@ -120,8 +120,11 @@ define([
                             const { normal, selected } = styles;
                             if (normal && normal.length) {
                                 const radius = getRadiusFromStyles(normal);
+                                const normalImage = normal[0].getImage();
+
                                 featureValues._nodeRadius = radius
-                                if (selected.length === 0 && normal[0].getImage()) {
+
+                                if (selected.length === 0 && !geometryOverride && normalImage && _.isFunction(normalImage.getStroke)) {
                                     const newSelected = normal[0].clone();
                                     const newStroke = new ol.style.Stroke({
                                         color: '#0088cc',
@@ -757,7 +760,8 @@ define([
     function getRadiusFromStyles(styles) {
         for (let i = styles.length - 1; i >= 0; i--) {
             const image = styles[i].getImage();
-            const radius = image && image.getRadius();
+            const radius = image && _.isFunction(image.getRadius) && image.getRadius();
+
             if (radius) {
                 const nodeRadius = radius / devicePixelRatio
                 return nodeRadius;
