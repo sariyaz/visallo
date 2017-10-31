@@ -388,7 +388,7 @@ define([
                             if (value) {
                                 const { latitude, longitude } = value;
                                 if (!isNaN(latitude) && !isNaN(longitude)) {
-                                    const validCoordinates = (latitude >= -90 && longitude <= 90) && (longitude >= -180 && longitude <= 180);
+                                    const validCoordinates = (latitude >= -90 && latitude <= 90) && (longitude >= -180 && longitude <= 180);
                                     if (validCoordinates) {
                                         props.push([longitude, latitude])
                                     } else {

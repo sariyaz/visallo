@@ -31,6 +31,7 @@ public class OwlToJavaTest {
     private OWLDatatype dataPropertyRange;
     private String dataPropertyDisplayType;
     private List<String> extendedDataTableNames;
+    private List<String> dataPropertyDomains;
 
     @Before
     public void before() {
@@ -50,16 +51,23 @@ public class OwlToJavaTest {
             protected String getDataPropertyDisplayType(OWLOntology o, OWLDataProperty dataProperty) {
                 return dataPropertyDisplayType;
             }
+
+            @Override
+            protected List<String> getDataPropertyDomains(OWLOntology o, OWLDataProperty dataProperty) {
+                return dataPropertyDomains;
+            }
         };
         dataPropertyDisplayType = null;
         dataPropertyRange = null;
         extendedDataTableNames = new ArrayList<>();
+        dataPropertyDomains = new ArrayList<>();
     }
 
     @Test
     public void exportDataProperty_string() throws Exception {
         String typeIri = "http://www.w3.org/2001/XMLSchema#string";
         String expectedType = "StringVisalloProperty";
+        dataPropertyDomains.add("http://visallo.org#testClass");
         testExportDataProperty(typeIri, expectedType);
     }
 
@@ -68,6 +76,7 @@ public class OwlToJavaTest {
         String typeIri = "http://www.w3.org/2001/XMLSchema#string";
         String expectedType = "StreamingVisalloProperty";
         dataPropertyDisplayType = "longtext";
+        dataPropertyDomains.add("http://visallo.org#testClass");
         testExportDataProperty(typeIri, expectedType);
     }
 
@@ -75,6 +84,7 @@ public class OwlToJavaTest {
     public void exportDataProperty_directoryEntry() throws Exception {
         String typeIri = "http://visallo.org#directory/entity";
         String expectedType = "DirectoryEntityVisalloProperty";
+        dataPropertyDomains.add("http://visallo.org#testClass");
         testExportDataProperty(typeIri, expectedType);
     }
 
@@ -82,6 +92,7 @@ public class OwlToJavaTest {
     public void exportDataProperty_hexBinary() throws Exception {
         String typeIri = "http://www.w3.org/2001/XMLSchema#hexBinary";
         String expectedType = "StreamingVisalloProperty";
+        dataPropertyDomains.add("http://visallo.org#testClass");
         testExportDataProperty(typeIri, expectedType);
     }
 
@@ -106,8 +117,10 @@ public class OwlToJavaTest {
 
         dataPropertyRange = new OWLDatatypeImpl(IRI.create("http://www.w3.org/2001/XMLSchema#string"));
         extendedDataTableNames.add("http://visallo.org/test#table1");
+        dataPropertyDomains.add("http://visallo.org#testClass");
         owlToJava.exportDataProperty(sortedValues, sortedIntents, documentIri, o, dataProperty);
-        assertEquals(1, sortedValues.size());
+        assertEquals(2, sortedValues.size());
+        assertEquals("public static final StringVisalloProperty PROP = new StringVisalloProperty(\"http://visallo.org/test#prop\");", sortedValues.get("PROP").trim());
         assertEquals("public static final StringVisalloExtendedData TABLE1_PROP = new StringVisalloExtendedData(\"http://visallo.org/test#table1\", \"http://visallo.org/test#prop\");", sortedValues.get("TABLE1_PROP").trim());
     }
 }

@@ -132,7 +132,7 @@
                             <goal>replace</goal>
                         </goals>
                         <configuration>
-                            <file>${visallo.dir}/config/log4j.xml</file>
+                            <file>${visallo.dir}/config/log4j2.xml</file>
                             <replacements>
                                 <replacement>
                                     <token>value="DEBUG"</token>

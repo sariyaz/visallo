@@ -14,8 +14,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import static org.vertexium.util.IterableUtils.toList;
+import static org.visallo.core.util.StreamUtil.stream;
 
 @Parameters(commandDescription = "Create a Java class similar to VisalloProperties for a specific IRI")
 public class OwlToJava extends CommandLineTool {
@@ -135,6 +137,8 @@ public class OwlToJava extends CommandLineTool {
                 type = DateVisalloExtendedData.class.getSimpleName();
             } else if ("http://www.w3.org/2001/XMLSchema#string".equals(rangeIri)) {
                 type = StringVisalloExtendedData.class.getSimpleName();
+            } else if ("http://www.w3.org/2001/XMLSchema#boolean".equals(rangeIri)) {
+                type = BooleanVisalloExtendedData.class.getSimpleName();
             } else {
                 throw new VisalloException("Could not map range type " + rangeIri);
             }
@@ -143,7 +147,9 @@ public class OwlToJava extends CommandLineTool {
                 String name = iriToJavaConstName(documentIri, extendedDataTableName) + "_" + javaConstName;
                 sortedValues.put(name, String.format("    public static final %s %s = new %s(\"%s\", \"%s\");", type, name, type, extendedDataTableName, iri));
             }
-        } else {
+        }
+
+        if (getDataPropertyDomains(o, dataProperty).size() > 0 || getDataPropertyObjectDomains(o, dataProperty).size() > 0) {
             if ("http://visallo.org#extendedDataTable".equals(rangeIri)) {
                 sortedValues.put(javaConstName, String.format("    public static final String %s = \"%s\";", javaConstName, iri));
                 return;
@@ -202,8 +208,16 @@ public class OwlToJava extends CommandLineTool {
         return javaConstName;
     }
 
-    private List<OWLClassExpression> getDataPropertyDomains(OWLOntology o, OWLDataProperty dataProperty) {
-        return toList(EntitySearcher.getDomains(dataProperty, o));
+    protected List<String> getDataPropertyDomains(OWLOntology o, OWLDataProperty dataProperty) {
+        return EntitySearcher.getDomains(dataProperty, o).stream()
+                .map(d -> ((HasIRI) d).getIRI().toString())
+                .collect(Collectors.toList());
+    }
+
+    protected List<String> getDataPropertyObjectDomains(OWLOntology o, OWLDataProperty dataProperty) {
+        return stream(OWLOntologyUtil.getObjectPropertyDomains(o, dataProperty))
+                .map(OWLOntologyUtil::getOWLAnnotationValueAsString)
+                .collect(Collectors.toList());
     }
 
     protected String getDataPropertyDisplayType(OWLOntology o, OWLDataProperty dataProperty) {

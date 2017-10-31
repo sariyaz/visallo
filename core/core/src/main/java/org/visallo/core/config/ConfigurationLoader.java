@@ -1,7 +1,7 @@
 package org.visallo.core.config;
 
 import com.google.common.base.Throwables;
-import org.apache.log4j.xml.DOMConfigurator;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.json.JSONObject;
 import org.visallo.core.exception.VisalloException;
 import org.visallo.core.exception.VisalloResourceNotFoundException;
@@ -10,6 +10,7 @@ import org.visallo.core.util.VisalloLoggerFactory;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -113,7 +114,7 @@ public abstract class ConfigurationLoader {
     public abstract Configuration createConfiguration();
 
     protected void doConfigureLog4j() {
-        String fileName = System.getProperty("logQuiet") == null ? "log4j.xml" : "log4j-quiet.xml";
+        String fileName = System.getProperty("logQuiet") == null ? "log4j2.xml" : "log4j2-quiet.xml";
         File log4jFile = null;
         String log4jLocation = null;
         try {
@@ -122,25 +123,25 @@ public abstract class ConfigurationLoader {
             // OK, try classpath
         }
         if (log4jFile == null || !log4jFile.exists()) {
+            URL log4jResource = getClass().getResource(fileName);
+            System.err.println("Could not resolve log4j2.xml, using the fallback: " + log4jResource);
             try {
-                URL log4jResource = getClass().getResource(fileName);
-                System.err.println("Could not resolve log4j.xml, using the fallback: " + log4jResource);
                 if (log4jResource != null) {
-                    DOMConfigurator.configure(log4jResource);
+                    Configurator.initialize((String)null, null, log4jResource.toURI());
                     log4jLocation = log4jResource.toExternalForm();
                 } else {
-                    throw new VisalloResourceNotFoundException("Could not find log4j.xml on the classpath");
+                    throw new VisalloResourceNotFoundException("Could not find log4j2.xml on the classpath");
                 }
-            } catch (RuntimeException e) {
-                Throwables.propagate(e);
+            } catch (URISyntaxException e) {
+                throw new VisalloException("Unable to load default log42.xml", e);
             }
         } else {
             log4jLocation = log4jFile.getAbsolutePath();
-            DOMConfigurator.configure(log4jFile.getAbsolutePath());
+            Configurator.initialize((String)null, null, log4jFile.toURI());
         }
         VisalloLogger logger = VisalloLoggerFactory.getLogger(VisalloLoggerFactory.class);
         logger.info("Using ConfigurationLoader: %s", this.getClass().getName());
-        logger.info("Using log4j.xml: %s", log4jLocation);
+        logger.info("Using log4j2.xml: %s", log4jLocation);
     }
 
     public abstract File resolveFileName(String fileName);

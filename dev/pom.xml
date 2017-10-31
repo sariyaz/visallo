@@ -44,13 +44,12 @@
         </dependency>
         <dependency>
             <groupId>org.visallo</groupId>
-            <artifactId>visallo-model-vertexium-elasticsearch</artifactId>
+            <artifactId>visallo-model-vertexium-inmemory</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.visallo</groupId>
-            <artifactId>visallo-model-vertexium-inmemory</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.vertexium</groupId>
+            <artifactId>vertexium-elasticsearch5</artifactId>
         </dependency>
     </dependencies>
 </project>

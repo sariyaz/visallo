@@ -12,7 +12,7 @@
         <fileSet>
             <includes>
                 <include>*.properties</include>
-                <include>log4j.xml</include>
+                <include>log4j2.xml</include>
             </includes>
         </fileSet>
     </fileSets>

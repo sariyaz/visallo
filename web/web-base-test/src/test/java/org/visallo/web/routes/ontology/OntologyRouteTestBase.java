@@ -77,7 +77,7 @@ public abstract class OntologyRouteTestBase extends RouteTestBase {
                 }
             };
         } catch (Exception e) {
-            throw new VisalloException("Unable to create in memory ontology repository", e);
+            throw new VisalloException("Unable to create in ontology repository", e);
         }
 
         User systemUser = new SystemUser();
