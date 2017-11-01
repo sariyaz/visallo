@@ -263,12 +263,13 @@ define([
         componentWillUnmount() {
             this._canvasPreviewBuffer = null;
             clearTimeout(this._handleMouseMoveTimeout);
-            if (this.state.cluster) {
-                this.olEvents.forEach(key => ol.Observable.unByKey(key));
-                this.olEvents = null;
-
+            if (this.domEvents) {
                 this.domEvents.forEach(fn => fn());
                 this.domEvents = null;
+            }
+            if (this.olEvents) {
+                this.olEvents.forEach(key => ol.Observable.unByKey(key));
+                this.olEvents = null;
             }
         },
 
@@ -456,6 +457,19 @@ define([
                 throw new Error('map.provider is invalid')
             }
 
+            this.olEvents.push(baseLayerSource.on('tileloaderror', function(event) {
+                const MaxRetry = 3;
+                const { tile } = event;
+
+                if (tile) {
+                    tile._retryCount = (tile._retryCount || 0) + 1;
+                    if (tile._retryCount <= MaxRetry) {
+                        console.warn(`Tile error retry: ${tile._retryCount} of ${MaxRetry}`, tile.src_);
+                        tile.load();
+                    }
+                }
+            }))
+
             map.addLayer(new ol.layer.Tile({ source: baseLayerSource }));
             if (below) {
                 map.addLayer(below.layer);
@@ -480,6 +494,8 @@ define([
                 const layer = new ol.layer.Vector({
                     id: `${type}Layer`,
                     source,
+                    updateWhileInteracting: true,
+                    updateWhileAnimating: true,
                     style: ancillary => this._ancillaryStyle(ancillary)
                 });
                 return { source, layer }
