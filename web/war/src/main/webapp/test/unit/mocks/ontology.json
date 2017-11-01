@@ -258,6 +258,15 @@
       }
     },
     {
+      "id": "http://visallo.org/dev#agent",
+      "title": "http://visallo.org/dev#agent",
+      "displayName": "Agent",
+      "titleFormula": "var aliasValues = props('http://visallo.org/dev#alias'); return aliasValues.length.toString();" ,
+      "properties": [
+        "http://visallo.org/dev#alias"
+      ]
+    },
+    {
       "id": "http://visallo.org/dev#phoneCall",
       "title": "http://visallo.org/dev#phoneCall",
       "displayName": "Phone Call",

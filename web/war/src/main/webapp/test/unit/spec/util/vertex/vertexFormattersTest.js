@@ -7,6 +7,7 @@ define([
         VERTEX_ERROR = 'Vertex is invalid',
         PROPERTY_NAME_ERROR = 'Property name is invalid',
         PROPERTY_NAME_FIRST = 'http://visallo.org/dev#firstName',
+        PROPERTY_NAME_ALIAS = 'http://visallo.org/dev#alias',
         PROPERTY_NAME_LAST = 'http://visallo.org/dev#lastName',
         PROPERTY_NAME_TITLE = 'http://visallo.org#title',
         PROPERTY_NAME_RAW = 'http://visallo.org#raw',
@@ -515,6 +516,16 @@ define([
                     ]);
 
                 V.title(vertex).should.equal('harwig, jason')
+            })
+
+            it('should get a title when title formula uses props', function() {
+                var vertex = vertexFactory([
+                        propertyFactory(PROPERTY_NAME_ALIAS, 'k1', 'jason harwig'),
+                        propertyFactory(PROPERTY_NAME_ALIAS, 'k2', 'jason'),
+                        propertyFactory(PROPERTY_NAME_CONCEPT, 'http://visallo.org/dev#agent')
+                    ]);
+
+                V.title(vertex).should.equal('2')
             })
 
             it('Concept should be available to formulas for vertices', function() {
