@@ -120,7 +120,8 @@ define([
                             const { normal, selected } = styles;
                             if (normal && normal.length) {
                                 const radius = getRadiusFromStyles(normal);
-                                const normalImage = normal[0].getImage();
+                                const normalImage = _.isFunction(normal[0].getImage) &&
+                                    normal[0].getImage();
 
                                 featureValues._nodeRadius = radius
 
@@ -465,7 +466,9 @@ define([
                     tile._retryCount = (tile._retryCount || 0) + 1;
                     if (tile._retryCount <= MaxRetry) {
                         console.warn(`Tile error retry: ${tile._retryCount} of ${MaxRetry}`, tile.src_);
-                        tile.load();
+                        _.defer(() => {
+                            tile.load();
+                        })
                     }
                 }
             }))
@@ -494,6 +497,7 @@ define([
                 const layer = new ol.layer.Vector({
                     id: `${type}Layer`,
                     source,
+                    renderBuffer: 500,
                     updateWhileInteracting: true,
                     updateWhileAnimating: true,
                     style: ancillary => this._ancillaryStyle(ancillary)
@@ -775,12 +779,14 @@ define([
 
     function getRadiusFromStyles(styles) {
         for (let i = styles.length - 1; i >= 0; i--) {
-            const image = styles[i].getImage();
-            const radius = image && _.isFunction(image.getRadius) && image.getRadius();
+            if (_.isFunction(styles[i].getImage)) {
+                const image = styles[i].getImage();
+                const radius = image && _.isFunction(image.getRadius) && image.getRadius();
 
-            if (radius) {
-                const nodeRadius = radius / devicePixelRatio
-                return nodeRadius;
+                if (radius) {
+                    const nodeRadius = radius / devicePixelRatio
+                    return nodeRadius;
+                }
             }
         }
     }
