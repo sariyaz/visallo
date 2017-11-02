@@ -77,11 +77,13 @@ define([
         });
 
         this.watchForProductChanges = function() {
-            this.subscription = visalloData.storePromise.then(store => store.observe(productSelectors.getProduct, (newProduct) => {
-                if (newProduct) {
-                    this.renderChart().then(() => this.updateBarSelection(this.currentSelected));
-                }
-            }));
+            visalloData.storePromise.then(store => {
+                this.subscription = store.observe(productSelectors.getProduct, (newProduct) => {
+                    if (newProduct) {
+                        this.renderChart().then(() => this.updateBarSelection(this.currentSelected));
+                    }
+                });
+            });
         }
 
         this.onFitHistogram = function() {

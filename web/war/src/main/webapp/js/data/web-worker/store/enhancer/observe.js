@@ -13,14 +13,11 @@ define([], function() {
             let previousState;
 
             const handleChange = () => {
+                const onChange = handler || selector;
                 const newState = handler ? selector(store.getState()) : store.getState();
 
-                if (!handler) {
-                    handler = selector;
-                }
-
                 if (newState !== previousState) {
-                    handler(newState, previousState);
+                    onChange(newState, previousState);
                     previousState = newState;
                 }
             }

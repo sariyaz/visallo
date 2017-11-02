@@ -9,8 +9,9 @@ define([
     '../store',
     '../store/workspace/actions-impl',
     '../store/element/selectors',
+    '../store/product/selectors',
     '../util/queue'
-], function(ajax, storeHelper, workspaceActions, elementSelectors, queue) {
+], function(ajax, storeHelper, workspaceActions, elementSelectors, productSelectors, queue) {
     'use strict';
 
     const { getStore } = storeHelper;
@@ -103,14 +104,16 @@ define([
 
             const getExtendedData = () => {
                 if (product.extendedData) {
-                    return Promise.resolve(product.extendedData);
+                    return Promise.resolve(productSelectors.getElementIdsInProduct(state));
                 }
                 let unsubscribe = () => {};
                 return new Promise(function(fulfill) {
-                    unsubscribe = store.observe(state => state.product.workspaces, (newState) => {
-                        const product = productId && newState.product.workspaces[workspaceId].products[productId];
-                        if (product.extendedData.vertices && product.extendedData.edges) {
-                            fulfill(product.extendedData);
+                    unsubscribe = store.observe((nextState, prevState) => {
+                        if (!prevState || prevState.product.workspaces !== nextState.product.workspaces) {
+                            const product = productId && nextState.product.workspaces[workspaceId].products[productId];
+                            if (product.extendedData && product.extendedData.vertices && product.extendedData.edges) {
+                                fulfill(productSelectors.getElementIdsInProduct(nextState));
+                            }
                         }
                     })
                 }).tap(unsubscribe);
