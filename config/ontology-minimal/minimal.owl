@@ -32,7 +32,6 @@
         <visallo:intent>artifactContainsImage</visallo:intent>
         <visallo:intent>artifactContainsImageOfEntity</visallo:intent>
         <rdfs:label xml:lang="en">Contains Image of</rdfs:label>
-        <visallo:userVisible>false</visallo:userVisible>
     </owl:ObjectProperty>
     
 
@@ -44,7 +43,6 @@
         <rdfs:range rdf:resource="http://visallo.org/minimal#raw"/>
         <visallo:intent>entityHasImage</visallo:intent>
         <rdfs:label xml:lang="en">Has Media</rdfs:label>
-        <visallo:userVisible>false</visallo:userVisible>
     </owl:ObjectProperty>
     
 
@@ -56,7 +54,6 @@
         <rdfs:range rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
         <visallo:intent xml:lang="en">artifactHasEntity</visallo:intent>
         <rdfs:label xml:lang="en">Has Entity</rdfs:label>
-        <visallo:userVisible>false</visallo:userVisible>
     </owl:ObjectProperty>
     
 
